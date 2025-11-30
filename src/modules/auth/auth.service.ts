@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { ILoginUser, IRegisterUser } from "./auth.validation"; // Importing types from validation
 import AppError from "@/utils/AppError";
 import { StatusCodes } from "http-status-codes";
-import { signJwtAccessToken } from "@/lib/jwt";
+import { signToken } from "@/lib/jwt";
 
 const registerUser = async (payload: IRegisterUser) => {
   // Check if user exists
@@ -53,7 +53,7 @@ const loginUser = async (payload: ILoginUser) => {
   // Generate Token
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password, ...userWithoutPassword } = userData;
-  const accessToken = signJwtAccessToken(userWithoutPassword);
+  const accessToken = signToken(userWithoutPassword);
 
   return {
     accessToken,
