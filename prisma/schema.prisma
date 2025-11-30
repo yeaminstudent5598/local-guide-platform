@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -84,6 +83,7 @@ model Listing {
   updatedAt     DateTime  @updatedAt
   
   bookings      Booking[]
+  reviews       Review[]  // ✅ Added this relation
   
   @@index([guideId])
   @@index([city])
@@ -146,6 +146,10 @@ model Review {
   
   guideId       String
   guide         User      @relation("ReviewsForGuide", fields: [guideId], references: [id], onDelete: Cascade)
+
+  // ✅ Added Listing Relation (Important for showing reviews on tour page)
+  listingId     String
+  listing       Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
   
   bookingId     String    @unique
   booking       Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
@@ -155,5 +159,6 @@ model Review {
   
   @@index([userId])
   @@index([guideId])
+  @@index([listingId])
   @@index([rating])
 }
