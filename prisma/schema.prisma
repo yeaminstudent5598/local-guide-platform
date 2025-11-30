@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TOURIST
+  GUIDE
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          Role      @default(TOURIST)
+  profileImage  String?
+  bio           String?
+  phone         String?
+  languages     String[]  @default([])
+  
+  // Guide specific fields
+  expertise     String[]  @default([])
+  dailyRate     Float?
+  isVerified    Boolean   @default(false)
+  totalEarnings Float     @default(0)
+  
+  // Tourist specific fields
+  travelPreferences String[]  @default([])
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  listings      Listing[]
+  bookingsAsTourist Booking[] @relation("TouristBookings")
+  bookingsAsGuide   Booking[] @relation("GuideBookings")
+  reviews       Review[]  @relation("ReviewsByUser")
+  reviewsReceived Review[] @relation("ReviewsForGuide")
+  
+  @@index([email])
+  @@index([role])
+}
+
+model Listing {
+  id            String    @id @default(cuid())
+  title         String
+  description   String    @db.Text
+  itinerary     String?   @db.Text
+  tourFee       Float
+  duration      Int       // in days
+  maxGroupSize  Int
+  meetingPoint  String
+  city          String
+  country       String
+  category      String[]  @default([])
+  images        String[]  @default([])
+  isActive      Boolean   @default(true)
+  
+  guideId       String
+  guide         User      @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  bookings      Booking[]
+  
+  @@index([guideId])
+  @@index([city])
+  @@index([isActive])
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  bookingDate   DateTime
+  numberOfPeople Int          @default(1)
+  totalAmount   Float
+  status        BookingStatus @default(PENDING)
+  message       String?       @db.Text
+  
+  touristId     String
+  tourist       User          @relation("TouristBookings", fields: [touristId], references: [id], onDelete: Cascade)
+  
+  guideId       String
+  guide         User          @relation("GuideBookings", fields: [guideId], references: [id], onDelete: Cascade)
+  
+  listingId     String
+  listing       Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  payment       Payment?
+  review        Review?
+  
+  @@index([touristId])
+  @@index([guideId])
+  @@index([listingId])
+  @@index([status])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  amount        Float
+  currency      String        @default("usd")
+  status        PaymentStatus @default(PENDING)
+  stripePaymentIntentId String? @unique
+  
+  bookingId     String        @unique
+  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  @@index([bookingId])
+  @@index([status])
+}
+
+model Review {
+  id            String    @id @default(cuid())
+  rating        Int       // 1-5
+  comment       String    @db.Text
+  
+  userId        String
+  user          User      @relation("ReviewsByUser", fields: [userId], references: [id], onDelete: Cascade)
+  
+  guideId       String
+  guide         User      @relation("ReviewsForGuide", fields: [guideId], references: [id], onDelete: Cascade)
+  
+  bookingId     String    @unique
+  booking       Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([guideId])
+  @@index([rating])
+}
