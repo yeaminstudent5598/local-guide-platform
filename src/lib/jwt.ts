@@ -1,25 +1,28 @@
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-const DEFAULT_SIGN_OPTION: SignOptions = {
-  expiresIn: '7d', // 7 days token validity
-};
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
-export const signJwtAccessToken = (payload: object, options: SignOptions = DEFAULT_SIGN_OPTION) => {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) throw new Error("AUTH_SECRET is not defined in .env");
-  
-  const token = jwt.sign(payload, secret, options);
-  return token;
-};
+export interface CustomJWTPayload {
+  id: string;
+  email: string;
+  role: string;
+}
 
-export const verifyJwt = (token: string) => {
+export function signToken(payload: CustomJWTPayload): string {
+  return jwt.sign(
+    { ...payload }, // Spread operator use করলাম
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions // Type assertion
+  );
+}
+
+export function verifyToken(token: string): CustomJWTPayload | null {
   try {
-    const secret = process.env.AUTH_SECRET;
-    if (!secret) throw new Error("AUTH_SECRET is not defined in .env");
-    
-    return jwt.verify(token, secret);
+    const decoded = jwt.verify(token, JWT_SECRET) as CustomJWTPayload;
+    return decoded;
   } catch (error) {
-    console.log(error);
+    console.error("JWT verification error:", error);
     return null;
   }
-};
+}
