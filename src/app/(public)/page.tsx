@@ -1,85 +1,73 @@
 // src/app/(public)/page.tsx
 
-import FeaturedTours from "@/components/home/FeaturedTours";
+// 1. ইম্পোর্ট সেকশন (Import Section)
 import HeroSection from "@/components/home/HeroSection";
+import FeaturedTours from "@/components/home/FeaturedTours";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Globe, Users } from "lucide-react";
+import { Globe, Users, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       
-      {/* 1. Hero Section */}
+      {/* 2. Hero Section ব্যবহার */}
       <HeroSection />
 
-      {/* 2. Featured Tours Section */}
+      {/* 3. Featured Tours Section ব্যবহার */}
       <FeaturedTours />
 
-      {/* 3. How It Works Section */}
+      {/* 4. How It Works Section (Manual Code) */}
       <section className="py-16">
         <div className="container text-center">
           <h2 className="text-3xl font-bold mb-12">How It Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Step 1 */}
             <div className="flex flex-col items-center p-6 space-y-4 rounded-xl bg-slate-50 border">
               <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                 <Globe className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold">1. Find a Tour</h3>
               <p className="text-muted-foreground">
-                Browse through hundreds of unique tours and find the perfect match for your interests.
+                Browse through hundreds of unique tours and find the perfect match.
               </p>
             </div>
+            
+            {/* Step 2 */}
             <div className="flex flex-col items-center p-6 space-y-4 rounded-xl bg-slate-50 border">
               <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                 <Users className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold">2. Book a Guide</h3>
               <p className="text-muted-foreground">
-                Connect with verified local experts and book your preferred date and time instantly.
+                Connect with verified local experts and book instantly.
               </p>
             </div>
+
+            {/* Step 3 */}
             <div className="flex flex-col items-center p-6 space-y-4 rounded-xl bg-slate-50 border">
               <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                 <CheckCircle className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold">3. Enjoy the Trip</h3>
               <p className="text-muted-foreground">
-                Experience the destination like a local and create unforgettable memories.
+                Experience the destination like a local.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. Top Destinations (Simple Grid) */}
-      <section className="py-16 bg-slate-900 text-white">
-        <div className="container">
-          <h2 className="text-3xl font-bold mb-8 text-center">Popular Destinations</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {["Sylhet", "Bandarban", "Sajek Valley", "Sundarbans"].map((place) => (
-              <div key={place} className="h-40 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition cursor-pointer">
-                <h3 className="text-xl font-bold">{place}</h3>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Call to Action (Become a Guide) */}
+      {/* 5. Call to Action Section */}
       <section className="py-20 bg-primary/10">
         <div className="container text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Share Your World, Earn Money</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Share Your World</h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Become a local guide and turn your passion for your city into a source of income. 
-            Join thousands of guides on Vistara today.
+            Become a local guide and turn your passion for your city into income.
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/register?role=GUIDE">
               <Button size="lg" className="px-8 text-lg">Become a Guide</Button>
-            </Link>
-            <Link href="/how-it-works">
-              <Button size="lg" variant="outline" className="px-8 text-lg">Learn More</Button>
             </Link>
           </div>
         </div>
