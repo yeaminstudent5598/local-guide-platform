@@ -1,14 +1,25 @@
 import { prisma } from "@/lib/prisma";
-import { Listing, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { deleteFromCloudinary, getPublicIdFromUrl } from "@/lib/cloudinary";
 
 // 1. Create Listing
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createListing = async (payload: any, userId: string) => {
   const result = await prisma.listing.create({
     data: {
       ...payload,
-      guideId: userId, // User ID from token
+      guideId: userId,
+      isActive: true, // ✅ Default value দিলাম
+    },
+    include: {
+      guide: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          profileImage: true,
+          bio: true,
+        },
+      },
     },
   });
   return result;
@@ -16,7 +27,7 @@ const createListing = async (payload: any, userId: string) => {
 
 // 2. Get All Listings (Search & Filter)
 const getAllListings = async (query: Record<string, unknown>) => {
-  const { searchTerm, city, minPrice, maxPrice, ...filterData } = query;
+  const { searchTerm, city, minPrice, maxPrice } = query;
 
   const andConditions: Prisma.ListingWhereInput[] = [];
 
@@ -59,12 +70,27 @@ const getAllListings = async (query: Record<string, unknown>) => {
     include: {
       guide: {
         select: {
+          id: true,
           name: true,
           profileImage: true,
           email: true,
+          isVerified: true,
         },
       },
-      reviews: true,
+      reviews: {
+        select: {
+          id: true,
+          rating: true,
+          comment: true,
+          createdAt: true,
+        },
+      },
+      _count: {
+        select: {
+          bookings: true,
+          reviews: true,
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -85,16 +111,27 @@ const getSingleListing = async (id: string) => {
           profileImage: true,
           bio: true,
           languages: true,
+          expertise: true,
+          isVerified: true,
           createdAt: true,
         },
       },
       reviews: {
         include: {
           user: {
-            select: { name: true, profileImage: true },
+            select: {
+              id: true,
+              name: true,
+              profileImage: true,
+            },
           },
         },
         orderBy: { createdAt: "desc" },
+      },
+      _count: {
+        select: {
+          bookings: true,
+        },
       },
     },
   });
@@ -102,27 +139,46 @@ const getSingleListing = async (id: string) => {
 };
 
 // 4. Update Listing (Only Owner)
-const updateListing = async (id: string, payload: Partial<Listing>, userId: string) => {
+const updateListing = async (id: string, payload: any, userId: string) => {
   const listing = await prisma.listing.findUnique({ where: { id } });
 
-  if (!listing) throw new Error("Listing not found");
-  if (listing.guideId !== userId) throw new Error("You are not authorized to edit this listing");
+  if (!listing) {
+    throw new Error("Listing not found");
+  }
+  
+  if (listing.guideId !== userId) {
+    throw new Error("You are not authorized to edit this listing");
+  }
 
   const result = await prisma.listing.update({
     where: { id },
     data: payload,
+    include: {
+      guide: {
+        select: {
+          id: true,
+          name: true,
+          profileImage: true,
+        },
+      },
+    },
   });
   return result;
 };
 
-// 5. Delete Listing (With Cloudinary Image Cleanup) ⚠️ Important
+// 5. Delete Listing (With Cloudinary Image Cleanup)
 const deleteListing = async (id: string, userId: string) => {
   const listing = await prisma.listing.findUnique({ where: { id } });
 
-  if (!listing) throw new Error("Listing not found");
-  if (listing.guideId !== userId) throw new Error("You are not authorized to delete this listing");
+  if (!listing) {
+    throw new Error("Listing not found");
+  }
+  
+  if (listing.guideId !== userId) {
+    throw new Error("You are not authorized to delete this listing");
+  }
 
-  // --> Delete images from Cloudinary
+  // Delete images from Cloudinary
   if (listing.images && listing.images.length > 0) {
     try {
       await Promise.all(
@@ -135,14 +191,53 @@ const deleteListing = async (id: string, userId: string) => {
       );
     } catch (error) {
       console.error("Error deleting images from Cloudinary:", error);
-      // We continue to delete listing even if image delete fails
     }
   }
 
-  // --> Delete from Database
+  // Delete from Database
   const result = await prisma.listing.delete({
     where: { id },
   });
+  return result;
+};
+
+// 6. Get Listings by Guide ID
+const getListingsByGuideId = async (guideId: string) => {
+  const result = await prisma.listing.findMany({
+    where: { guideId },
+    include: {
+      _count: {
+        select: {
+          bookings: true,
+          reviews: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return result;
+};
+
+// 7. Toggle Listing Status (Active/Inactive)
+const toggleListingStatus = async (id: string, userId: string) => {
+  const listing = await prisma.listing.findUnique({
+    where: { id },
+    select: { guideId: true, isActive: true },
+  });
+
+  if (!listing) {
+    throw new Error("Listing not found");
+  }
+
+  if (listing.guideId !== userId) {
+    throw new Error("You are not authorized to update this listing");
+  }
+
+  const result = await prisma.listing.update({
+    where: { id },
+    data: { isActive: !listing.isActive },
+  });
+
   return result;
 };
 
@@ -152,4 +247,6 @@ export const ListingService = {
   getSingleListing,
   updateListing,
   deleteListing,
+  getListingsByGuideId,
+  toggleListingStatus,
 };
