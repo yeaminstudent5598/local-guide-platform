@@ -1,86 +1,56 @@
-// src/app/(public)/page.tsx
+import Image from "next/image";
 
-import FeaturedTours from "@/components/home/FeaturedTours";
-import HeroSection from "@/components/home/HeroSection";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, Globe, Users } from "lucide-react";
-import Link from "next/link";
-
-export default function HomePage() {
+export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-screen">
-      
-      {/* 1. Hero Section */}
-      <HeroSection />
+    <div className="min-h-screen bg-white">
 
-      {/* 2. Featured Tours Section */}
-      <FeaturedTours />
+      {/* Hero */}
+      <section className="py-24 container text-center max-w-4xl">
+        <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight">
+          We Connect People <br /> Through <span className="text-primary">Stories</span>
+        </h1>
+        <p className="text-xl text-slate-600 leading-relaxed">
+          Vistara is a platform that empowers locals to share their culture and travelers to experience the world authentically.
+        </p>
+      </section>
 
-      {/* 3. How It Works Section */}
-      <section className="py-16">
-        <div className="container text-center">
-          <h2 className="text-3xl font-bold mb-12">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center p-6 space-y-4 rounded-xl bg-slate-50 border">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                <Globe className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold">1. Find a Tour</h3>
-              <p className="text-muted-foreground">
-                Browse through hundreds of unique tours and find the perfect match for your interests.
-              </p>
-            </div>
-            <div className="flex flex-col items-center p-6 space-y-4 rounded-xl bg-slate-50 border">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                <Users className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold">2. Book a Guide</h3>
-              <p className="text-muted-foreground">
-                Connect with verified local experts and book your preferred date and time instantly.
-              </p>
-            </div>
-            <div className="flex flex-col items-center p-6 space-y-4 rounded-xl bg-slate-50 border">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                <CheckCircle className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold">3. Enjoy the Trip</h3>
-              <p className="text-muted-foreground">
-                Experience the destination like a local and create unforgettable memories.
-              </p>
-            </div>
+      {/* Image Grid */}
+      <section className="container mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[500px] rounded-3xl overflow-hidden">
+          <div className="relative h-full bg-slate-200">
+            <Image src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=2070&auto=format&fit=crop" alt="Travel" fill className="object-cover" />
+          </div>
+          <div className="relative h-full bg-slate-200 md:col-span-2">
+            <Image src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=2070&auto=format&fit=crop" alt="Team" fill className="object-cover" />
           </div>
         </div>
       </section>
 
-      {/* 4. Top Destinations (Simple Grid) */}
-      <section className="py-16 bg-slate-900 text-white">
-        <div className="container">
-          <h2 className="text-3xl font-bold mb-8 text-center">Popular Destinations</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {["Sylhet", "Bandarban", "Sajek Valley", "Sundarbans"].map((place) => (
-              <div key={place} className="h-40 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition cursor-pointer">
-                <h3 className="text-xl font-bold">{place}</h3>
-              </div>
-            ))}
+      {/* Mission */}
+      <section className="py-20 bg-slate-50">
+        <div className="container grid md:grid-cols-2 gap-16 items-center">
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold text-slate-900">Our Mission</h2>
+            <p className="text-slate-600 text-lg leading-relaxed">
+              We believe that the best way to see a place is through the eyes of someone who calls it home. Our mission is to democratize travel guiding, allowing anyone with passion and knowledge to become a guide.
+            </p>
+            <p className="text-slate-600 text-lg leading-relaxed">
+              By connecting travelers directly with locals, we create more authentic experiences and keep tourism revenue within local communities.
+            </p>
           </div>
-        </div>
-      </section>
-
-      {/* 5. Call to Action (Become a Guide) */}
-      <section className="py-20 bg-primary/10">
-        <div className="container text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Share Your World, Earn Money</h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Become a local guide and turn your passion for your city into a source of income. 
-            Join thousands of guides on Vistara today.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Link href="/register?role=GUIDE">
-              <Button size="lg" className="px-8 text-lg">Become a Guide</Button>
-            </Link>
-            <Link href="/how-it-works">
-              <Button size="lg" variant="outline" className="px-8 text-lg">Learn More</Button>
-            </Link>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="bg-white p-8 rounded-2xl shadow-sm text-center">
+              <div className="text-4xl font-bold text-primary mb-2">500+</div>
+              <div className="text-slate-500">Local Guides</div>
+            </div>
+            <div className="bg-white p-8 rounded-2xl shadow-sm text-center">
+              <div className="text-4xl font-bold text-primary mb-2">12k+</div>
+              <div className="text-slate-500">Happy Travelers</div>
+            </div>
+            <div className="bg-white p-8 rounded-2xl shadow-sm text-center col-span-2">
+              <div className="text-4xl font-bold text-primary mb-2">50+</div>
+              <div className="text-slate-500">Cities Covered</div>
+            </div>
           </div>
         </div>
       </section>

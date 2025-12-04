@@ -1,44 +1,35 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner"; // ✅ Sonner Import
+import {
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
+} from "@/components/ui/form";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
-const formSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
 });
 
-const LoginForm = () => {
+export default function LoginForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    const toastId = toast.loading("Logging in...");
-
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    setLoading(true);
     try {
       const response = await fetch("/api/v1/auth/login", {
         method: "POST",
@@ -46,32 +37,20 @@ const LoginForm = () => {
         body: JSON.stringify(values),
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.message || "Login failed");
-      }
+      if (!response.ok) throw new Error(data.message);
 
-      // Store Token
-      localStorage.setItem("accessToken", result.data.accessToken);
-      
-      // Cookie set (Optional but recommended)
-      document.cookie = `accessToken=${result.data.accessToken}; path=/;`;
+      localStorage.setItem("accessToken", data.data.accessToken);
+      document.cookie = `accessToken=${data.data.accessToken}; path=/;`;
 
-      toast.success("Logged in successfully!", {
-        id: toastId,
-        description: "Welcome back to Vistara",
-      });
-
-      router.push("/dashboard"); 
-      router.refresh(); 
-
+      toast.success("Welcome back!");
+      router.push("/dashboard");
+      router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong", {
-        id: toastId,
-      });
+      toast.error(error.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }
 
@@ -84,9 +63,7 @@ const LoginForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="john@example.com" type="email" {...field} />
-              </FormControl>
+              <FormControl><Input placeholder="john@example.com" type="email" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -96,26 +73,25 @@ const LoginForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input placeholder="******" type="password" {...field} />
-              </FormControl>
+              <div className="flex justify-between items-center">
+                <FormLabel>Password</FormLabel>
+                {/* Forgot Password Link */}
+                <Link href="/forgot-password" class="text-xs text-primary hover:underline">
+                  Forgot Password?
+                </Link>
+              </div>
+              <FormControl><Input placeholder="******" type="password" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
+        <Button type="submit" className="w-full" size="lg" disabled={loading}>
+          {loading ? <Loader2 className="animate-spin" /> : "Login"}
         </Button>
-        <div className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-primary hover:underline">
-            Register
-          </Link>
+        <div className="text-center text-sm text-muted-foreground mt-4">
+          Don&apos;t have an account? <Link href="/register" className="text-primary hover:underline font-medium">Register</Link>
         </div>
       </form>
     </Form>
   );
-};
-
-export default LoginForm;
+}
