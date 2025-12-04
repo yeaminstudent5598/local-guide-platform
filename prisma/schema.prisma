@@ -15,6 +15,7 @@ enum Role {
 
 enum BookingStatus {
   PENDING
+  ACCEPTED
   CONFIRMED
   COMPLETED
   CANCELLED
@@ -57,6 +58,9 @@ model User {
   reviews       Review[]  @relation("ReviewsByUser")
   reviewsReceived Review[] @relation("ReviewsForGuide")
   
+  // ✅ Added Wishlist Relation
+  wishlist      Wishlist[] 
+  
   @@index([email])
   @@index([role])
 }
@@ -83,8 +87,13 @@ model Listing {
   updatedAt     DateTime  @updatedAt
   
   bookings      Booking[]
-  reviews       Review[]  // ✅ Added this relation
+  reviews       Review[]
   
+  // ✅ Added Wishlist Relation
+  wishlist      Wishlist[]
+
+  unavailableDates DateTime[] @default([])
+
   @@index([guideId])
   @@index([city])
   @@index([isActive])
@@ -111,7 +120,7 @@ model Booking {
   updatedAt     DateTime      @updatedAt
   
   payment       Payment?
-  review        Review?
+  review        Review? // Optional One-to-One Relation
   
   @@index([touristId])
   @@index([guideId])
@@ -120,17 +129,17 @@ model Booking {
 }
 
 model Payment {
-  id            String        @id @default(cuid())
-  amount        Float
-  currency      String        @default("usd")
-  status        PaymentStatus @default(PENDING)
-  stripePaymentIntentId String? @unique
+  id             String        @id @default(cuid())
+  amount         Float
+  currency       String        @default("BDT")
+  status         PaymentStatus @default(PENDING)
+  transactionId  String        @unique 
   
-  bookingId     String        @unique
-  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId      String        @unique
+  booking        Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   
   @@index([bookingId])
   @@index([status])
@@ -147,12 +156,12 @@ model Review {
   guideId       String
   guide         User      @relation("ReviewsForGuide", fields: [guideId], references: [id], onDelete: Cascade)
 
-  // ✅ Added Listing Relation (Important for showing reviews on tour page)
   listingId     String
   listing       Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
   
-  bookingId     String    @unique
-  booking       Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  // Optional booking link
+  bookingId     String?   @unique
+  booking       Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -161,4 +170,20 @@ model Review {
   @@index([guideId])
   @@index([listingId])
   @@index([rating])
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId]) 
+  @@index([userId])
+  @@index([listingId])
 }
