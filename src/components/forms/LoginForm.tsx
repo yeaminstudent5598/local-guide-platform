@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -22,6 +22,9 @@ const loginSchema = z.object({
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  // 👁️‍🗨️ Password visibility toggle
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -63,11 +66,15 @@ export default function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
-              <FormControl><Input placeholder="john@example.com" type="email" {...field} /></FormControl>
+              <FormControl>
+                <Input placeholder="john@example.com" type="email" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* PASSWORD FIELD */}
         <FormField
           control={form.control}
           name="password"
@@ -75,21 +82,49 @@ export default function LoginForm() {
             <FormItem>
               <div className="flex justify-between items-center">
                 <FormLabel>Password</FormLabel>
-                {/* ✅ FIX: Changed 'class' to 'className' */}
-                <Link href="/forgot-password" className="text-xs text-primary hover:underline">
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-primary hover:underline"
+                >
                   Forgot Password?
                 </Link>
               </div>
-              <FormControl><Input placeholder="******" type="password" {...field} /></FormControl>
+
+              <FormControl>
+                <div className="relative">
+                  <Input
+                    placeholder="******"
+                    type={showPassword ? "text" : "password"}
+                    {...field}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-3 flex items-center text-muted-foreground"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </FormControl>
+
               <FormMessage />
             </FormItem>
           )}
         />
+
         <Button type="submit" className="w-full" size="lg" disabled={loading}>
           {loading ? <Loader2 className="animate-spin" /> : "Login"}
         </Button>
+
         <div className="text-center text-sm text-muted-foreground mt-4">
-          Don&apos;t have an account? <Link href="/register" className="text-primary hover:underline font-medium">Register</Link>
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/register"
+            className="text-primary hover:underline font-medium"
+          >
+            Register
+          </Link>
         </div>
       </form>
     </Form>
