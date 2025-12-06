@@ -5,14 +5,12 @@ import { Toaster } from "@/components/ui/sonner";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
-// English Font (Inter is clean and professional)
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
 });
 
-// Bengali Font (Hind Siliguri is excellent for readability)
 const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali"],
   weight: ["300", "400", "500", "600", "700"],
@@ -34,12 +32,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${hindSiliguri.variable} font-sans antialiased bg-slate-50 text-slate-900`}>
         <ThemeProvider>
-        <LanguageProvider>
-          {children}
-        </LanguageProvider>
+          <LanguageProvider>
+            {children}
+            <Toaster position="top-center" richColors />
+          </LanguageProvider>
         </ThemeProvider>
-
-        <Toaster position="top-center" richColors />
       </body>
     </html>
   );
