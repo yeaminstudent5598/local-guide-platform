@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar"; // Ensure you have shadcn calendar
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, X, Loader2, Calendar as CalendarIcon } from "lucide-react";
 import Image from "next/image";
@@ -30,15 +30,17 @@ const tourFormSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   itinerary: z.string().optional().or(z.literal("")),
+  
+  // Coercion logic is handled here
   tourFee: z.coerce.number().min(0, "Price must be a positive number"),
   duration: z.coerce.number().int().min(1, "Duration must be at least 1 day"),
   maxGroupSize: z.coerce.number().int().min(1, "Group size must be at least 1"),
+  
   meetingPoint: z.string().min(3, "Meeting point is required"),
   city: z.string().min(2, "City is required"),
   country: z.string().min(2, "Country is required"),
   category: z.array(z.string()).min(1, "Select at least one category"),
   images: z.array(z.string()).min(1, "Upload at least one image"),
-  // ✅ New Field: Unavailable Dates
   unavailableDates: z.array(z.date()).optional().default([]),
 });
 
@@ -77,12 +79,16 @@ export default function TourForm({ initialData, isEdit = false }: TourFormProps)
     watch,
     formState: { errors, isSubmitting },
   } = useForm<TourFormData>({
-    resolver: zodResolver(tourFormSchema),
+    // ✅ FIX: 'as any' is used here to bypass the strict type mismatch caused by z.coerce
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(tourFormSchema) as any,
     defaultValues: initialData ? {
       ...initialData,
+      // Ensure numbers are numbers
       tourFee: Number(initialData.tourFee),
       duration: Number(initialData.duration),
       maxGroupSize: Number(initialData.maxGroupSize),
+      // Ensure dates are Date objects
       unavailableDates: initialData.unavailableDates?.map((d: string) => new Date(d)) || [],
     } : {
       title: "",
@@ -228,7 +234,7 @@ export default function TourForm({ initialData, isEdit = false }: TourFormProps)
             </div>
           </div>
 
-          {/* ✅ AVAILABILITY CALENDAR (New Feature) */}
+          {/* Availability Calendar */}
           <div className="space-y-2">
             <Label>Block Unavailable Dates</Label>
             <Controller
