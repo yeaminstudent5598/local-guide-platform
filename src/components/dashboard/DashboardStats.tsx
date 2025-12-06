@@ -8,9 +8,9 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { 
-  Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Defs, LinearGradient, Stop 
+  Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid
 } from "recharts";
-import { useLanguage } from "@/components/providers/LanguageProvider"; // ✅ Language Hook
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 // Interfaces
 interface DashboardStats {
@@ -31,7 +31,7 @@ interface DashboardClientProps {
 }
 
 export default function DashboardClient({ stats, role, userName }: DashboardClientProps) {
-  const { lang } = useLanguage(); // Language Context
+  const { lang } = useLanguage();
 
   // Translations object
   const t = {
