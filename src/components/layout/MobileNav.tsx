@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, LogOut, User, LayoutDashboard, Map, Heart, Sparkles } from "lucide-react";
+import { Menu, LogOut, User, LayoutDashboard, Map, Heart, Sparkles, Globe } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLanguage } from "@/components/providers/LanguageProvider"; // ✅ Import
 
-// User Payload Interface
 interface UserPayload {
   id: string;
   email: string;
@@ -21,11 +21,13 @@ interface UserPayload {
 const MobileNav = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false); // To close menu on click
+  const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<UserPayload | null>(null);
   const [mounted, setMounted] = useState(false);
+  
+  // ✅ Language Hook
+  const { lang, setLang, t } = useLanguage();
 
-  // Auth Check (Same logic as Navbar)
   useEffect(() => {
     setMounted(true);
     const token = localStorage.getItem("accessToken");
@@ -47,8 +49,8 @@ const MobileNav = () => {
   };
 
   const routes = [
-    { href: "/", label: "Home" },
-    { href: "/explore", label: "Explore Tours" },
+    { href: "/", label: t.home },
+    { href: "/explore", label: t.explore },
     { href: "/how-it-works", label: "How it Works" },
     { href: "/about", label: "About Us" },
   ];
@@ -65,11 +67,23 @@ const MobileNav = () => {
       <SheetContent side="left" className="w-[300px] sm:w-[350px] p-6 flex flex-col h-full">
         
         {/* Header */}
-        <div className="flex items-center gap-2 mb-8">
-          <div className="bg-primary/10 p-2 rounded-lg">
-            <Map className="h-6 w-6 text-primary" />
-          </div>
-          <span className="text-2xl font-bold text-slate-900">Vistara</span>
+        <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-2">
+                <div className="bg-primary/10 p-2 rounded-lg">
+                    <Map className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-2xl font-bold text-slate-900">Vistara</span>
+            </div>
+            {/* Language Toggle in Mobile */}
+            <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setLang(lang === "en" ? "bn" : "en")}
+                className="rounded-full hover:bg-primary/10"
+            >
+                <Globe className="h-4 w-4 mr-1" />
+                {lang === "en" ? "BN" : "EN"}
+            </Button>
         </div>
 
         {/* Navigation Links */}
@@ -95,7 +109,6 @@ const MobileNav = () => {
         <div className="mt-auto pt-6 border-t border-slate-100">
           {user ? (
             <div className="space-y-4">
-              {/* User Profile Snippet */}
               <div className="flex items-center gap-3 px-2 mb-4">
                 <Avatar className="h-10 w-10 border border-slate-200">
                   <AvatarImage src="/placeholder-avatar.jpg" />
@@ -109,7 +122,6 @@ const MobileNav = () => {
                 </div>
               </div>
 
-              {/* Dashboard Links */}
               <div className="grid grid-cols-2 gap-2">
                 <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                   <Button variant="outline" className="w-full justify-start gap-2 h-10 px-3">
@@ -143,7 +155,7 @@ const MobileNav = () => {
             <div className="flex flex-col gap-3">
               <Link href="/login" onClick={() => setIsOpen(false)}>
                 <Button variant="outline" className="w-full h-11 text-base font-medium border-slate-300">
-                  Log in
+                  {t.login}
                 </Button>
               </Link>
               <Link href="/register" onClick={() => setIsOpen(false)}>
