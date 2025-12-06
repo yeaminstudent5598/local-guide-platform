@@ -6,11 +6,12 @@ import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Star, MapPin, Globe, Award, Calendar,
+  Star, MapPin, Award, Calendar,
   ShieldCheck, User, Languages
 } from "lucide-react";
 import Link from "next/link";
 import ReviewList from "@/components/reviews/ReviewList";
+import { Button } from "@/components/ui/button";
 
 // ISR: Revalidate every hour
 export const revalidate = 3600;
@@ -29,11 +30,11 @@ export default async function GuideProfilePage({
     return notFound();
   }
 
-  // 2. Fetch Guide's Listings (Using existing service logic)
-  // Note: We are fetching ALL listings then filtering by guideId manually if service doesn't support direct filter
-  // Better approach: ListingService.getAllListings({ guideId: id }) if supported
-  // Assuming you updated getAllListings to accept guideId, or we filter here:
-  const allListings = await ListingService.getAllListings({});
+  // 2. Fetch Guide's Listings
+  // Note: This assumes you have getAllListings in ListingService
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const allListings: any[] = await ListingService.getAllListings({});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const listings = allListings.filter((item: any) => item.guideId === id && item.isActive);
 
   // 3. Fetch Reviews & Stats
@@ -41,11 +42,11 @@ export default async function GuideProfilePage({
   const rating = await ReviewService.getGuideRating(id);
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-slate-50">
       
       {/* --- HERO HEADER --- */}
       <div className="bg-slate-900 text-white pt-20 pb-32 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-slate-900/80 z-0"></div>
         <div className="container relative z-10">
           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
             
@@ -112,26 +113,28 @@ export default async function GuideProfilePage({
                        </p>
                     </div>
 
+                    {/* ✅ FIX: Added type 'string' for map function */}
                     {guide.languages && guide.languages.length > 0 && (
                        <div>
                           <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                              <Languages className="h-5 w-5 text-primary" /> Languages
                           </h3>
                           <div className="flex flex-wrap gap-2">
-                             {guide.languages.map((lang, i) => (
+                             {guide.languages.map((lang: string, i: number) => (
                                 <Badge key={i} variant="secondary">{lang}</Badge>
                              ))}
                           </div>
                        </div>
                     )}
 
+                    {/* ✅ FIX: Added type 'string' for map function */}
                     {guide.expertise && guide.expertise.length > 0 && (
                        <div>
                           <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                              <Award className="h-5 w-5 text-primary" /> Expertise
                           </h3>
                           <div className="flex flex-wrap gap-2">
-                             {guide.expertise.map((skill, i) => (
+                             {guide.expertise.map((skill: string, i: number) => (
                                 <Badge key={i} variant="outline">{skill}</Badge>
                              ))}
                           </div>
@@ -153,6 +156,7 @@ export default async function GuideProfilePage({
                  <h2 className="text-2xl font-bold text-slate-900 mb-6">Tours by {guide.name}</h2>
                  {listings.length > 0 ? (
                     <div className="grid md:grid-cols-2 gap-6">
+                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                        {listings.map((tour: any) => (
                           <Link href={`/tours/${tour.id}`} key={tour.id} className="group">
                              <Card className="overflow-hidden border-slate-200 hover:shadow-md transition-all h-full">
@@ -191,7 +195,3 @@ export default async function GuideProfilePage({
     </div>
   );
 }
-
-// Import Button dynamically to avoid server errors if needed, 
-// but standard import works in server components too for rendering.
-import { Button } from "@/components/ui/button";
