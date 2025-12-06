@@ -11,7 +11,9 @@ import {
   CalendarDays,
   CreditCard,
   Users,
-  Compass
+  Compass,
+  CalendarOff,
+  MessageSquare
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -50,6 +52,7 @@ const Sidebar = () => {
 
   const touristRoutes = [
     { href: "/dashboard/bookings", label: "My Trips", icon: Map },
+    { href: "/dashboard/reviews", label: "My Reviews", icon: MessageSquare },
     { href: "/explore", label: "Explore Tours", icon: Compass },
   ];
 
@@ -57,6 +60,8 @@ const Sidebar = () => {
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { href: "/dashboard/listings", label: "My Listings", icon: List },
     { href: "/dashboard/bookings", label: "Booking Requests", icon: CalendarDays },
+    { href: "/dashboard/reviews", label: "Reviews", icon: MessageSquare },
+    { href: "/dashboard/availability", label: "Availability", icon: CalendarOff },
     { href: "/dashboard/earnings", label: "Earnings", icon: CreditCard },
   ];
 
