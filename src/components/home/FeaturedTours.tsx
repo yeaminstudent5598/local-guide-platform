@@ -7,6 +7,7 @@ import { Star, MapPin, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/components/providers/LanguageProvider"; // ✅ Import Language Hook
 
 // 1. Define Interface
 interface Listing {
@@ -18,7 +19,7 @@ interface Listing {
   duration: number;
   images: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  reviews?: any[]; // or specific review type
+  reviews?: any[]; 
   _count?: { reviews: number };
 }
 
@@ -28,9 +29,9 @@ interface FeaturedToursProps {
 }
 
 const FeaturedTours = ({ tours }: FeaturedToursProps) => {
-  
-  // Infinite Scroll logic for Framer Motion
-  // If tours exist, double them for loop effect
+  const { lang } = useLanguage(); // ✅ Use Language Hook
+
+  // Infinite Scroll Logic
   const sliderItems = tours.length > 0 ? [...tours, ...tours] : [];
 
   // Helper for Rating
@@ -42,17 +43,28 @@ const FeaturedTours = ({ tours }: FeaturedToursProps) => {
     return (total / reviews.length).toFixed(1);
   };
 
+  // Translations
+  const t = {
+    heading: lang === 'en' ? "Featured Experiences" : "জনপ্রিয় অভিজ্ঞতা",
+    subHeading: lang === 'en' ? "Top picks for your next adventure." : "আপনার পরবর্তী অ্যাডভেঞ্চারের জন্য সেরা বাছাই।",
+    viewAll: lang === 'en' ? "View All" : "সব দেখুন",
+    days: lang === 'en' ? "Days" : "দিন",
+    startingFrom: lang === 'en' ? "Starting from" : "শুরু হচ্ছে",
+    bookNow: lang === 'en' ? "Book Now" : "বুক করুন",
+    noTours: lang === 'en' ? "No featured tours available at the moment." : "এই মুহূর্তে কোনো জনপ্রিয় ট্যুর নেই।",
+  };
+
   return (
     <section className="py-20 bg-slate-50 overflow-hidden">
       <div className="container mb-10">
         <div className="flex justify-between items-end">
           <div>
-            <h2 className="text-3xl font-extrabold text-slate-900">Featured Experiences</h2>
-            <p className="text-slate-500 mt-2">Top picks for your next adventure.</p>
+            <h2 className="text-3xl font-extrabold text-slate-900">{t.heading}</h2>
+            <p className="text-slate-500 mt-2">{t.subHeading}</p>
           </div>
           <Link href="/explore">
             <Button variant="ghost" className="text-primary hover:text-primary/80 hover:bg-primary/5">
-              View All <ArrowRight className="ml-2 h-4 w-4" />
+              {t.viewAll} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
@@ -60,7 +72,7 @@ const FeaturedTours = ({ tours }: FeaturedToursProps) => {
 
       {tours.length === 0 ? (
         <div className="container text-center py-10 text-muted-foreground">
-           No featured tours available at the moment.
+           {t.noTours}
         </div>
       ) : (
         /* Framer Motion Slider */
@@ -91,7 +103,7 @@ const FeaturedTours = ({ tours }: FeaturedToursProps) => {
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <Badge className="absolute top-4 left-4 bg-white/90 text-slate-900 hover:bg-white shadow-sm font-bold px-3 py-1">
-                        {tour.duration} Days
+                        {tour.duration} {t.days}
                       </Badge>
                     </div>
 
@@ -113,10 +125,10 @@ const FeaturedTours = ({ tours }: FeaturedToursProps) => {
 
                     <CardFooter className="p-6 pt-0 flex justify-between items-center mt-auto">
                       <div>
-                        <p className="text-xs text-slate-400">Starting from</p>
+                        <p className="text-xs text-slate-400">{t.startingFrom}</p>
                         <p className="text-xl font-bold text-primary">৳ {tour.tourFee}</p>
                       </div>
-                      <Button className="rounded-full px-6 shadow-md shadow-primary/20">Book Now</Button>
+                      <Button className="rounded-full px-6 shadow-md shadow-primary/20">{t.bookNow}</Button>
                     </CardFooter>
                   </Card>
                 </Link>
