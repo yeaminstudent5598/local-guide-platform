@@ -40,7 +40,24 @@ const getListingReviews = catchAsync(async (req: Request, { params }: { params: 
   });
 });
 
+
+// ✅ NEW: Get My Reviews Controller
+const getMyReviews = catchAsync(async (req: Request) => {
+  const user = await authGuard(["ADMIN", "GUIDE", "TOURIST"]);
+  
+  const result = await ReviewService.getMyReviews(user.id, user.role);
+
+  return sendResponse({
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Reviews retrieved successfully",
+    data: result,
+  });
+});
+
+
 export const ReviewController = {
   createReview,
   getListingReviews,
+  getMyReviews,
 };
