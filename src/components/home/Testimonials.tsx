@@ -40,7 +40,7 @@ export default function Testimonials({ reviews }: { reviews: any[] }) {
   ];
 
   return (
-    <section className="py-24 bg-slate-50 relative overflow-hidden">
+    <section className="py-24 px-4 bg-slate-50 relative overflow-hidden">
       
       {/* Background Decoration */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">

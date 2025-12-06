@@ -35,7 +35,7 @@ export default function HowItWorks() {
   const icons = [Search, CalendarCheck, Map];
 
   return (
-    <section className="py-24 bg-white relative overflow-hidden">
+    <section className="py-24 px-4 bg-white relative overflow-hidden">
       
       {/* Background Decorative Blobs */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30">

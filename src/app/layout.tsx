@@ -5,14 +5,16 @@ import { Toaster } from "@/components/ui/sonner";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
+// English Font
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
 });
 
+// Bengali Font - latin subset add korte hobe for fallback
 const hindSiliguri = Hind_Siliguri({
-  subsets: ["bengali"],
+  subsets: ["bengali", "latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-hind",
   display: "swap",
@@ -30,7 +32,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${hindSiliguri.variable} font-sans antialiased bg-slate-50 text-slate-900`}>
+      <body 
+        className={`${inter.variable} ${hindSiliguri.variable} antialiased`}
+        data-lang="en"
+      >
         <ThemeProvider>
           <LanguageProvider>
             {children}

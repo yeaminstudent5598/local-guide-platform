@@ -55,7 +55,7 @@ const FeaturedTours = ({ tours }: FeaturedToursProps) => {
   };
 
   return (
-    <section className="py-20 bg-slate-50 overflow-hidden">
+    <section className="py-20 px-4 bg-slate-50 overflow-hidden">
       <div className="container mb-10">
         <div className="flex justify-between items-end">
           <div>

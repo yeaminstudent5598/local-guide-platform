@@ -15,15 +15,30 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
   const [lang, setLangState] = useState<Language>("en");
-  const [mounted, setMounted] = useState(false);
 
+  // Load saved language from localStorage
   useEffect(() => {
-    setMounted(true);
     const savedLang = localStorage.getItem("app-lang") as Language;
     if (savedLang && (savedLang === "en" || savedLang === "bn")) {
       setLangState(savedLang);
     }
   }, []);
+
+  // Update body class and data attribute when language changes
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const body = document.body;
+      
+      // Add/remove Bengali class
+      if (lang === "bn") {
+        body.classList.add("bengali-active");
+        body.setAttribute("data-lang", "bn");
+      } else {
+        body.classList.remove("bengali-active");
+        body.setAttribute("data-lang", "en");
+      }
+    }
+  }, [lang]);
 
   const setLang = (newLang: Language) => {
     setLangState(newLang);
@@ -38,7 +53,6 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     t: translations[lang]
   };
 
-  // Always provide context, even before mount
   return (
     <LanguageContext.Provider value={value}>
       {children}

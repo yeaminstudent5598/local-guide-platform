@@ -92,6 +92,7 @@ const Footer = () => {
         <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
           <p>&copy; {new Date().getFullYear()} Vistara Inc. {t.rights}</p>
           <div className="flex gap-6">
+            <Link href="about" className="hover:text-slate-900">About US</Link>
             <Link href="#" className="hover:text-slate-900">Privacy</Link>
             <Link href="#" className="hover:text-slate-900">Terms</Link>
             <Link href="#" className="hover:text-slate-900">Sitemap</Link>
