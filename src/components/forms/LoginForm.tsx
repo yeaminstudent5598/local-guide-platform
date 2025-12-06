@@ -75,8 +75,8 @@ export default function LoginForm() {
             <FormItem>
               <div className="flex justify-between items-center">
                 <FormLabel>Password</FormLabel>
-                {/* Forgot Password Link */}
-                <Link href="/forgot-password" class="text-xs text-primary hover:underline">
+                {/* ✅ FIX: Changed 'class' to 'className' */}
+                <Link href="/forgot-password" className="text-xs text-primary hover:underline">
                   Forgot Password?
                 </Link>
               </div>
