@@ -104,6 +104,22 @@ const resetPassword = catchAsync(async (req: Request) => {
   });
 });
 
+
+// ✅ NEW: Get Me Controller
+const getMe = catchAsync(async (req: Request) => {
+  // Token check (Allow all roles)
+  const user = await authGuard(["ADMIN", "GUIDE", "TOURIST"]);
+
+  const result = await AuthService.getMe(user.id);
+
+  return sendResponse({
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "User profile retrieved successfully",
+    data: result,
+  });
+});
+
 export const AuthController = {
   register,
   verify,
@@ -111,4 +127,5 @@ export const AuthController = {
   changePassword,
   forgotPassword,
   resetPassword,
+  getMe,
 };
