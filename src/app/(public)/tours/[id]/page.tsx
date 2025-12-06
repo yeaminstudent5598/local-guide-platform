@@ -29,7 +29,7 @@ export default async function TourDetailsPage({ params }: { params: Promise<{ id
     : "New";
 
   return (
-    <div className="bg-white min-h-screen pb-20 pt-6 font-sans">
+    <div className="bg-white min-h-screen pb-20 pt-22 font-sans">
       
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
