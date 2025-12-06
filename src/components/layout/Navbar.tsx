@@ -12,6 +12,7 @@ import MobileNav from "./MobileNav";
 import { User, LogOut, LayoutDashboard, Map, Heart, Globe, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useLanguage } from "@/components/providers/LanguageProvider"; // ✅ Import useLanguage
 
 interface UserPayload { id: string; email: string; role: string; name?: string; }
 
@@ -22,8 +23,8 @@ const Navbar = () => {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
-  // ✅ Multi-language State
-  const [lang, setLang] = useState<"en" | "bn">("en");
+  // ✅ Use Language Context
+  const { lang, setLang, t } = useLanguage(); 
 
   // Auth Check
   useEffect(() => {
@@ -55,9 +56,9 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { href: "/", label: lang === "en" ? "Home" : "হোম" },
-    { href: "/explore", label: lang === "en" ? "Explore" : "এক্সপ্লোর" },
-    { href: "/how-it-works", label: lang === "en" ? "How it Works" : "কিভাবে কাজ করে" },
+    { href: "/", label: t.home }, // ✅ Use translations
+    { href: "/explore", label: t.explore },
+    { href: "/how-it-works", label: "How it Works" }, // You can add this to translations too
   ];
 
   if (!mounted) return null;
@@ -114,7 +115,7 @@ const Navbar = () => {
           {/* Right Section - Actions */}
           <div className="flex items-center gap-3">
             
-            {/* Language Toggle */}
+            {/* ✅ Language Toggle Button */}
             <Button 
               variant="ghost" 
               size="sm" 
@@ -204,7 +205,7 @@ const Navbar = () => {
                     variant="ghost" 
                     className="rounded-full hover:bg-primary/10"
                   >
-                    Log in
+                    {t.login} {/* ✅ Translated */}
                   </Button>
                 </Link>
                 <Link href="/register">
