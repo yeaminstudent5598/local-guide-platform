@@ -241,6 +241,55 @@ const toggleListingStatus = async (id: string, userId: string) => {
   return result;
 };
 
+// ✅ NEW: Get All Listings For Admin (No filters, includes Inactive)
+const getAllListingsForAdmin = async () => {
+  const result = await prisma.listing.findMany({
+    include: {
+      guide: {
+        select: {
+          name: true,
+          email: true,
+          profileImage: true,
+        },
+      },
+      _count: {
+        select: { bookings: true }
+      }
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return result;
+};
+
+
+// ✅ NEW: Get Featured Listings (Top 6 Active)
+const getFeaturedListings = async () => {
+  const result = await prisma.listing.findMany({
+    where: {
+      isActive: true, // শুধুমাত্র অ্যাক্টিভ ট্যুর
+    },
+    take: 6, // মাত্র ৬টি দেখাবো
+    orderBy: {
+      createdAt: "desc", // লেটেস্ট আগে (অথবা reviews count দিয়ে সর্ট করতে পারেন)
+    },
+    include: {
+      guide: {
+        select: {
+          name: true,
+          profileImage: true,
+        },
+      },
+      reviews: {
+        select: {
+          rating: true,
+        },
+      },
+    },
+  });
+  return result;
+};
+
+
 export const ListingService = {
   createListing,
   getAllListings,
@@ -249,4 +298,6 @@ export const ListingService = {
   deleteListing,
   getListingsByGuideId,
   toggleListingStatus,
+  getAllListingsForAdmin,
+  getFeaturedListings,
 };
