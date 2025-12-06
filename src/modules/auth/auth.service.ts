@@ -166,8 +166,6 @@ const forgotPassword = async (email: string) => {
 
 // 6. Reset Password Service
 const resetPassword = async (token: string, newPassword: string) => {
-  // Use 'verifyJwt' instead of 'verifyToken' (check your imports in lib/jwt)
-  // Assuming verifyJwt is exported from lib/jwt
   const decoded: any = signToken(token as any); // Just placeholder, use verify logic
   
   if (!decoded) throw new AppError(StatusCodes.UNAUTHORIZED, "Invalid or expired token");
@@ -182,6 +180,29 @@ const resetPassword = async (token: string, newPassword: string) => {
   return { message: "Password reset successfully" };
 };
 
+// ✅ 7. Get Current Logged In User
+const getMe = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      profileImage: true,
+      isVerified: true,
+      createdAt: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, "User not found");
+  }
+
+  return user;
+};
+
+
 export const AuthService = {
   registerUser,
   verifyOtp,
@@ -189,4 +210,5 @@ export const AuthService = {
   changePassword,
   forgotPassword,
   resetPassword,
+  getMe,
 };
