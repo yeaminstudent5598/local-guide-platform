@@ -5,25 +5,26 @@ import ReviewList from "@/components/reviews/ReviewList";
 import WishlistButton from "@/components/shared/WishlistButton";
 import MapWrapper from "@/components/shared/MapWrapper";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users, Star, ShieldCheck, Share2, Award, Globe } from "lucide-react";
+import { MapPin, Clock, Star, ShieldCheck, Share2, Award, Globe } from "lucide-react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import MobileBookingAction from "@/components/tours/MobileBookingAction"; // ✅ NEW IMPORT
 
 // Next.js 15: params is a Promise
 export default async function TourDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   // 1. Fetch Tour Data
-  // Ensure ID is passed as string to prevent "Int" errors
   const tour = await ListingService.getSingleListing(id);
 
   if (!tour) {
     return notFound();
   }
 
-  // 2. Rating Calculation (Safe check)
+  // 2. Rating Calculation
   const reviewCount = tour.reviews?.length || 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const avgRating = reviewCount > 0
     ? (tour.reviews.reduce((acc: number, r: any) => acc + (r.rating || 0), 0) / reviewCount).toFixed(1)
     : "New";
@@ -72,7 +73,7 @@ export default async function TourDetailsPage({ params }: { params: Promise<{ id
           </div>
         </div>
 
-        {/* --- 2. GALLERY (Rounded Grid) --- */}
+        {/* --- 2. GALLERY --- */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-2 h-[350px] md:h-[500px] rounded-3xl overflow-hidden mb-12 shadow-sm border border-slate-100">
           <div className="md:col-span-2 relative h-full bg-slate-200 group cursor-pointer">
             <Image 
@@ -99,23 +100,23 @@ export default async function TourDetailsPage({ params }: { params: Promise<{ id
                 {tour.images[3] ? (
                   <Image src={tour.images[3]} alt="img-3" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                  <div className="w-full h-full bg-slate-100" />
+                   <div className="w-full h-full bg-slate-100" />
                 )}
              </div>
              <div className="relative h-full bg-slate-200 group cursor-pointer overflow-hidden">
                 {tour.images[4] ? (
-                  <>
-                    <Image src={tour.images[4]} alt="img-4" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                    {tour.images.length > 5 && (
-                      <div className="absolute inset-0 bg-black/40 hover:bg-black/50 transition flex items-center justify-center">
-                          <Button variant="secondary" size="sm" className="bg-white/90 text-slate-900 hover:bg-white shadow-sm font-medium backdrop-blur-sm">
-                            Show all photos
-                          </Button>
-                      </div>
-                    )}
-                  </>
+                   <>
+                     <Image src={tour.images[4]} alt="img-4" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                     {tour.images.length > 5 && (
+                       <div className="absolute inset-0 bg-black/40 hover:bg-black/50 transition flex items-center justify-center">
+                           <Button variant="secondary" size="sm" className="bg-white/90 text-slate-900 hover:bg-white shadow-sm font-medium backdrop-blur-sm">
+                             Show all photos
+                           </Button>
+                       </div>
+                     )}
+                   </>
                 ) : (
-                  <div className="w-full h-full bg-slate-100" />
+                   <div className="w-full h-full bg-slate-100" />
                 )}
              </div>
           </div>
@@ -204,7 +205,6 @@ export default async function TourDetailsPage({ params }: { params: Promise<{ id
             <div className="pb-8 border-b border-slate-200">
               <h3 className="text-xl font-bold text-slate-900 mb-6">Where you'll be</h3>
               <div className="h-[400px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm relative z-0">
-                 {/* Z-0 added to prevent map overlapping sticky header */}
                  <MapWrapper center={[23.8103, 90.4125]} popupText={tour.meetingPoint} />
               </div>
               <div className="mt-4 flex items-center gap-2 text-slate-700 font-medium">
@@ -223,6 +223,7 @@ export default async function TourDetailsPage({ params }: { params: Promise<{ id
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <ReviewList reviews={tour.reviews as any} />
               </div>
               
@@ -234,12 +235,12 @@ export default async function TourDetailsPage({ params }: { params: Promise<{ id
 
           </div>
 
-          {/* RIGHT COLUMN (Sticky Booking Widget) */}
+          {/* RIGHT COLUMN (Sticky Booking Widget - DESKTOP) */}
           <div className="relative hidden lg:block">
               <div className="sticky top-24">
                <div className="border border-slate-200 shadow-xl shadow-slate-200/50 rounded-2xl overflow-hidden bg-white p-6 space-y-6">
-                  
-                  <div className="flex justify-between items-end">
+                 
+                 <div className="flex justify-between items-end">
                      <div>
                         <span className="text-2xl font-bold text-slate-900">৳{tour.tourFee}</span>
                         <span className="text-slate-500 font-normal text-sm"> / person</span>
@@ -249,8 +250,8 @@ export default async function TourDetailsPage({ params }: { params: Promise<{ id
                      </div>
                   </div>
 
-                  {/* Booking Widget */}
-                  <BookingWidget 
+                 {/* Booking Widget */}
+                 <BookingWidget 
                       listingId={tour.id} 
                       price={tour.tourFee} 
                       maxGroupSize={tour.maxGroupSize} 
@@ -282,19 +283,8 @@ export default async function TourDetailsPage({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      {/* --- MOBILE FIXED BOOKING BAR --- */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 px-6 flex justify-between items-center z-50 safe-area-pb shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-         <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-lg font-bold text-slate-900">৳{tour.tourFee}</span>
-              <span className="text-slate-500 text-sm">/ person</span>
-            </div>
-            <div className="text-xs font-medium underline mt-0.5 text-slate-400">Available dates</div>
-         </div>
-         <Button size="lg" className="px-8 font-bold bg-primary hover:bg-primary/90 h-12 rounded-xl shadow-lg shadow-primary/20">
-            Book Now
-         </Button>
-      </div>
+      {/* --- ✅ NEW MOBILE FIXED BOOKING ACTION (Replaces static HTML) --- */}
+      <MobileBookingAction tour={tour} />
 
     </div>
   );

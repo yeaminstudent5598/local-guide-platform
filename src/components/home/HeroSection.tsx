@@ -61,7 +61,7 @@ const HeroSection = () => {
       <div className="relative z-10 container px-4">
         
         {/* Headline */}
-        <div className="text-center mb-10 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="text-center mt-10 mb-10 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-md leading-tight">
             {t.headline} <br /> <span className="text-primary">{t.highlight}</span>
           </h1>

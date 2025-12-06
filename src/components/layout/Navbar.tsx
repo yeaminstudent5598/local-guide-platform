@@ -12,7 +12,7 @@ import MobileNav from "./MobileNav";
 import { User, LogOut, LayoutDashboard, Map, Heart, Globe, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useLanguage } from "@/components/providers/LanguageProvider"; // ✅ Import useLanguage
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface UserPayload { id: string; email: string; role: string; name?: string; }
 
@@ -23,10 +23,8 @@ const Navbar = () => {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   
-  // ✅ Use Language Context
   const { lang, setLang, t } = useLanguage(); 
 
-  // Auth Check
   useEffect(() => {
     setMounted(true);
     const token = localStorage.getItem("accessToken");
@@ -38,7 +36,6 @@ const Navbar = () => {
     }
   }, []);
 
-  // Scroll Effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -56,9 +53,9 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { href: "/", label: t.home }, // ✅ Use translations
-    { href: "/explore", label: t.explore },
-    { href: "/how-it-works", label: "How it Works" }, // You can add this to translations too
+    { href: "/", label: t?.home || "Home" }, 
+    { href: "/explore", label: t?.explore || "Explore" },
+    { href: "/how-it-works", label: lang === 'en' ? "How it Works" : "কিভাবে কাজ করে" },
   ];
 
   if (!mounted) return null;
@@ -66,27 +63,31 @@ const Navbar = () => {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300",
+        // SOLUTION: Mobile a "sticky" use kora hoyeche jate content niche neme jay.
+        // Desktop a "fixed" thakbe jate transparent effect thake.
+        "top-0 left-0 right-0 z-50 w-full transition-all duration-300 border-b border-transparent",
+        "sticky md:fixed", 
         scrolled 
-          ? "bg-background/95 backdrop-blur-lg border-b shadow-sm" 
-          : "bg-background/60 backdrop-blur-md"
+          ? "bg-background/95 backdrop-blur-lg border-border shadow-sm" 
+          : "bg-background md:bg-background/50 md:backdrop-blur-sm" // Mobile a always solid background
       )}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-16 md:h-20 items-center justify-between">
+          
           {/* Left Section - Logo & Nav */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-2 md:gap-8">
             <MobileNav />
             
             <Link 
               href="/" 
-              className="flex items-center gap-2.5 group"
+              className="flex items-center gap-2 group"
             >
               <div className="relative">
-                <Map className="h-7 w-7 text-primary transition-transform group-hover:scale-110" />
-                <Sparkles className="h-3 w-3 text-primary absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Map className="h-6 w-6 md:h-7 md:w-7 text-primary transition-transform group-hover:scale-110" />
+                <Sparkles className="h-2.5 w-2.5 md:h-3 md:w-3 text-primary absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 Vistara
               </span>
             </Link>
@@ -113,9 +114,8 @@ const Navbar = () => {
           </div>
 
           {/* Right Section - Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             
-            {/* ✅ Language Toggle Button */}
             <Button 
               variant="ghost" 
               size="sm" 
@@ -127,7 +127,7 @@ const Navbar = () => {
             </Button>
 
             {user ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 {user.role === "GUIDE" && (
                   <Link href="/dashboard/listings/create" className="hidden md:block">
                     <Button 
@@ -145,15 +145,15 @@ const Navbar = () => {
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="relative h-10 w-10 rounded-full ring-2 ring-primary/20 hover:ring-primary/40 transition-all"
+                      className="relative h-9 w-9 md:h-10 md:w-10 rounded-full ring-2 ring-primary/20 hover:ring-primary/40 transition-all"
                     >
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="h-9 w-9 md:h-10 md:w-10">
                         <AvatarImage src="/placeholder-avatar.jpg" alt="@user" />
                         <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground font-semibold">
                           {user.email?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-background rounded-full" />
+                      <span className="absolute bottom-0 right-0 h-2.5 w-2.5 md:h-3 md:w-3 bg-green-500 border-2 border-background rounded-full" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64" align="end">
@@ -201,17 +201,12 @@ const Navbar = () => {
             ) : (
               <div className="hidden sm:flex items-center gap-2">
                 <Link href="/login">
-                  <Button 
-                    variant="ghost" 
-                    className="rounded-full hover:bg-primary/10"
-                  >
-                    {t.login} {/* ✅ Translated */}
+                  <Button variant="ghost" className="rounded-full hover:bg-primary/10">
+                    {t?.login || "Log in"}
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button 
-                    className="rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-md hover:shadow-lg transition-all"
-                  >
+                  <Button className="rounded-full bg-gradient-to-r from-primary to-primary/80 shadow-md">
                     Sign Up
                   </Button>
                 </Link>

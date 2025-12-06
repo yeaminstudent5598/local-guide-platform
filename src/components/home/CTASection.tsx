@@ -31,7 +31,7 @@ const CTASection = () => {
   ];
 
   return (
-    <section className="py-32 relative overflow-hidden bg-gradient-to-br from-primary via-primary to-primary/90">
+    <section className="py-32 px-4 relative overflow-hidden bg-gradient-to-br from-primary via-primary to-primary/90">
       
       {/* Animated Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem]" />
