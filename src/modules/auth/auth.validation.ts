@@ -31,8 +31,10 @@ const forgotPasswordSchema = z.object({
 
 // 3. Reset Password Schema (Public with Token)
 const resetPasswordSchema = z.object({
-  token: z.string({ required_error: "Token is required" }),
-  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+  token: z.string().min(1, "Token is required"),
+  newPassword: z
+    .string()
+    .min(6, "New password must be at least 6 characters"),
 });
 
 // 3. Export Validator
