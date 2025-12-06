@@ -126,6 +126,31 @@ const toggleStatus = catchAsync(
   }
 );
 
+// ✅ NEW: Admin Get All Listings
+const getAdminListings = catchAsync(async (req: Request) => {
+  await authGuard(["ADMIN"]); // Only Admin
+  const result = await ListingService.getAllListingsForAdmin();
+
+  return sendResponse({
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "All listings retrieved successfully",
+    data: result,
+  });
+});
+
+// ✅ NEW: Get Featured Listings Controller
+const getFeatured = catchAsync(async (req: Request) => {
+  const result = await ListingService.getFeaturedListings();
+
+  return sendResponse({
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Featured listings retrieved successfully",
+    data: result,
+  });
+});
+
 export const ListingController = {
   create,
   getAll,
@@ -133,4 +158,6 @@ export const ListingController = {
   update,
   delete: deleteListing,
   toggleStatus,
+  getAdminListings,
+  getFeatured,
 };
