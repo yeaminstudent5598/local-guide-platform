@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import BookingsList from "@/components/bookings/BookingList";
 
-// Define the Type manually or import from Prisma/Client
+// Booking Interface
 interface Booking {
   id: string;
   bookingDate: Date;
@@ -31,7 +31,6 @@ export default async function BookingsPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
   
-  // ✅ FIX: Explicitly define the type array
   let bookings: Booking[] = []; 
   let userRole = "";
 
@@ -43,13 +42,10 @@ export default async function BookingsPage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = await BookingService.getAllBookings(decoded.id, decoded.role);
         
-        // Map Prisma result to our Interface (Handle Date/Nulls safely)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         bookings = result.map((b: any) => ({
           ...b,
-          // Ensure status matches the union type
           status: b.status as Booking["status"], 
-          // Ensure tourist profileImage is handled
           tourist: {
             ...b.tourist,
             profileImage: b.tourist.profileImage || null
@@ -75,8 +71,6 @@ export default async function BookingsPage() {
       </div>
 
       <Suspense fallback={<div className="flex h-[50vh] justify-center items-center"><Loader2 className="animate-spin h-8 w-8 text-primary"/></div>}>
-         {/* Convert Date objects to string for Client Component if needed, or pass as is if compatible */}
-         {/* JSON.parse(JSON.stringify(bookings)) is a hack to serialize Dates for Client Components */}
          <BookingsList initialBookings={JSON.parse(JSON.stringify(bookings))} userRole={userRole} />
       </Suspense>
     </div>
