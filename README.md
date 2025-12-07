@@ -72,8 +72,7 @@
 
 | Landing Page | Dashboard |
 | --- | --- |
-| ![Landing](https://i.ibb.co.com/36KNsLk/image.png) | !
-[Dashboard](https://i.ibb.co.com/KzLrddqy/image.png) |
+| ![Landing](https://i.ibb.co.com/36KNsLk/image.png) | ! [Dashboard](https://i.ibb.co.com/KzLrddqy/image.png) |
 
 ---
 
