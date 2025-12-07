@@ -18,9 +18,9 @@
 **Vistara** is a full-stack travel platform connecting travelers with passionate local experts. Unlike generic tour agencies, Vistara empowers locals to monetize their knowledge and offers travelers authentic, off-the-beaten-path experiences.
 
 ### 🔗 Live Links
-- **Live Site:** [https://your-vercel-link.app](https://your-vercel-link.app)
+- **Live Site:** [Live Link](https://local-guide-platform.vercel.app/)
 - **Backend API:** `Next.js API Routes`
-- **Project Video:** [Watch Explanation Video](https://youtube.com/your-video-link)
+- **Project Video:** [Watch Explanation Video](https://youtu.be/X-2cBpL9Gek)
 
 ---
 
