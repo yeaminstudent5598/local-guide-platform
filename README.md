@@ -72,7 +72,7 @@
 
 | Landing Page | Dashboard |
 | --- | --- |
-| ![Landing](https://via.placeholder.com/400x200?text=Home+Page) | ![Dashboard](https://via.placeholder.com/400x200?text=Dashboard) |
+| ![Landing](https://via.placeholder.com/400x200?text=Home+Page) | ![Dashboard](https://i.ibb.co.com/KzLrddqy/image.png) |
 
 ---
 
