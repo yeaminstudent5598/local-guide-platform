@@ -167,14 +167,15 @@ const updateListing = async (id: string, payload: any, userId: string) => {
 };
 
 // 5. Delete Listing (With Cloudinary Image Cleanup)
-const deleteListing = async (id: string, userId: string) => {
+const deleteListing = async (id: string, userId: string, userRole: string) => {
   const listing = await prisma.listing.findUnique({ where: { id } });
 
   if (!listing) {
     throw new Error("Listing not found");
   }
   
-  if (listing.guideId !== userId) {
+  // ✅ FIX: Logic Update
+  if (userRole !== "ADMIN" && listing.guideId !== userId) {
     throw new Error("You are not authorized to delete this listing");
   }
 

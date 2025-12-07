@@ -4,18 +4,14 @@ import { authGuard } from "@/utils/authGuard";
 import { redirect } from "next/navigation";
 
 export default async function EditListingPage({ params }: { params: Promise<{ id: string }> }) {
-  // 1. Auth Check (Server Side)
-  // Ensure only Guide/Admin can access
   try {
      await authGuard(["GUIDE", "ADMIN"]);
   } catch (error) {
      redirect("/login");
   }
 
-  // 2. Get Listing ID
   const { id } = await params;
 
-  // 3. Fetch Listing Data
   const listing = await ListingService.getSingleListing(id);
 
   if (!listing) {

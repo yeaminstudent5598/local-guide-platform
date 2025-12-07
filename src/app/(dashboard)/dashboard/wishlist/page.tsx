@@ -10,9 +10,9 @@ import { toast } from "sonner";
 import WishlistButton from "@/components/shared/WishlistButton";
 
 interface WishlistItem {
-  id: string; // Wishlist entry ID
+  id: string;
   listing: {
-    id: string; // Listing ID
+    id: string;
     title: string;
     city: string;
     country: string;

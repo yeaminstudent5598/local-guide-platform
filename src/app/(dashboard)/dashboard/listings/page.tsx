@@ -8,14 +8,12 @@ import ListingsClient from "../../ListingsClient";
 export default async function MyListingsPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let listings: any[] = [];
 
   if (token) {
     try {
       const decoded = verifyToken(token);
       if (decoded && decoded.role === "GUIDE") {
-        // ✅ Direct Service Call (Server-to-Database) - No API fetch needed
         listings = await ListingService.getListingsByGuideId(decoded.id);
       }
     } catch (error) {

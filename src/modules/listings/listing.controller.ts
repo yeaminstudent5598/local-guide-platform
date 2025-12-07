@@ -98,7 +98,8 @@ const deleteListing = catchAsync(
     const user = await authGuard(["GUIDE", "ADMIN"]);
     const { id } = await params;
 
-    const result = await ListingService.deleteListing(id, user.id); // ✅ Fixed
+    // ✅ FIX: Pass 'user.role' to the service
+    const result = await ListingService.deleteListing(id, user.id, user.role);
 
     return sendResponse({
       statusCode: StatusCodes.OK,

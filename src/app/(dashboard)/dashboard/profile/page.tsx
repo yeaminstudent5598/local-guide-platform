@@ -9,7 +9,6 @@ import ProfileClient from "../../ProfileClient";
 export default async function ProfilePage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let userData: any = null;
 
   if (!token) {
@@ -19,7 +18,6 @@ export default async function ProfilePage() {
   try {
     const decoded = verifyToken(token);
     if (decoded) {
-      // ✅ Fetch user directly from Service
       userData = await AuthService.getMe(decoded.id);
     }
   } catch (error) {
@@ -32,7 +30,6 @@ export default async function ProfilePage() {
 
   return (
     <Suspense fallback={<div className="flex h-[50vh] justify-center items-center"><Loader2 className="h-8 w-8 animate-spin text-primary"/></div>}>
-       {/* Pass serialized data */}
        <ProfileClient initialData={JSON.parse(JSON.stringify(userData))} />
     </Suspense>
   );

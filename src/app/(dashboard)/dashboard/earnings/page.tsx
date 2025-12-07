@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import EarningsClient from "../../EarningsClient";
 
-// ✅ 1. Define Interface for Type Safety
 interface EarningItem {
   id: string;
   amount: number;
@@ -29,14 +28,9 @@ export default async function EarningsPage() {
   if (token) {
     try {
       const decoded = verifyToken(token);
-      // Ensure only Guide or Admin can access
       if (decoded && (decoded.role === "GUIDE" || decoded.role === "ADMIN")) {
-        // Direct Service Call
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data = await EarningService.getMyEarnings(decoded.id, decoded.role);
         
-        // Explicitly cast or map data to match interface if needed
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         history = data.history as any; 
         totalEarnings = data.total;
         pendingPayout = data.pending;
