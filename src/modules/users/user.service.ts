@@ -56,7 +56,16 @@ const updateProfile = async (id: string, payload: any) => {
   const result = await prisma.user.update({
     where: { id },
     data: payload,
-    select: { id: true, name: true, email: true, profileImage: true, bio: true, phone: true }
+    select: { 
+      id: true, 
+      name: true, 
+      email: true, 
+      profileImage: true, 
+      bio: true, 
+      phone: true,
+      languages: true, // ✅ যোগ করা হয়েছে
+      expertise: true  // ✅ যোগ করা হয়েছে
+    }
   });
   return result;
 };
@@ -74,8 +83,8 @@ const getUserById = async (id: string) => {
       bio: true,
       phone: true,
       isVerified: true,
-      languages: true,
-      expertise: true,
+      languages: true, // ✅ এই ফিল্ডটি নিশ্চিত করুন
+      expertise: true, // ✅ এই ফিল্ডটি নিশ্চিত করুন
       createdAt: true,
     },
   });
