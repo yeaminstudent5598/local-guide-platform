@@ -1,4 +1,5 @@
 import { UserController } from "@/modules/users/user.controller";
 
-// ইউজার ডিলিট করার জন্য (Admin Only)
+export const GET = UserController.getUserById;
 export const DELETE = UserController.deleteUser;
+export const PUT = UserController.updateMe;
