@@ -3,6 +3,7 @@ import sendResponse from "@/utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { UserService } from "./user.service";
 import { authGuard } from "@/utils/authGuard";
+import { NextResponse } from "next/server";
 
 const getAllUsers = catchAsync(async (req: Request) => {
   // Only Admin can see all users
@@ -77,10 +78,27 @@ const getUserById = catchAsync(async (req: Request, { params }: { params: Promis
     data: result,
   });
 });
+
+
+const getPublicGuides = catchAsync(async (req: Request) => {
+  const { searchParams } = new URL(req.url);
+  const limit = Number(searchParams.get("limit")) || 3;
+
+  const result = await UserService.getPublicGuidesFromDB(limit);
+
+  return NextResponse.json({
+    success: true,
+    message: "Public guides fetched successfully",
+    data: result,
+  });
+});
+
+
 export const UserController = {
   getAllUsers,
   deleteUser,
   getMe,
   updateMe,
   getUserById,
+  getPublicGuides,
 };
