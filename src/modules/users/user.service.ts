@@ -91,6 +91,34 @@ const getUserById = async (id: string) => {
   return result;
 };
 
+
+ const getPublicGuidesFromDB = async (limit: number) => {
+  return await prisma.user.findMany({
+    where: {
+      role: "GUIDE",
+    },
+    take: limit || 3,
+    select: {
+      id: true,
+      name: true,
+      profileImage: true,
+      bio: true,
+      isVerified: true,
+      expertise: true,
+      languages: true,
+      _count: {
+        select: {
+          reviewsReceived: true,
+          listings: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
 export const UserService = {
   getAllUsers,
   deleteUser,
@@ -98,4 +126,5 @@ export const UserService = {
   getSingleUser,
   updateProfile,
   getUserById,
+  getPublicGuidesFromDB,
 };
