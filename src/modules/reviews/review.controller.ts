@@ -56,8 +56,57 @@ const getMyReviews = catchAsync(async (req: Request) => {
 });
 
 
+const getGuideReviews = catchAsync(
+  async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
+
+    if (!id) {
+      return sendResponse({
+        statusCode: StatusCodes.BAD_REQUEST,
+        success: false,
+        message: "Guide ID is required",
+        data: null,
+      });
+    }
+
+    const result = await ReviewService.getGuideReviews(id);
+
+    return sendResponse({
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Guide reviews retrieved successfully",
+      data: result,
+    });
+  }
+);
+
+// ✅ NEW: Get Guide Rating
+const getGuideRating = catchAsync(
+  async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
+
+    if (!id) {
+      throw new AppError(StatusCodes.BAD_REQUEST, "Guide ID is required");
+    }
+
+    const result = await ReviewService.getGuideRating(id);
+
+    // Always return the rating stats (0 if no reviews)
+    return sendResponse({
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Guide rating retrieved successfully",
+      data: result, // { average: 0, count: 0 } if no reviews
+    });
+  }
+);
+
+
+
 export const ReviewController = {
   createReview,
   getListingReviews,
   getMyReviews,
+  getGuideReviews,
+  getGuideRating,
 };
