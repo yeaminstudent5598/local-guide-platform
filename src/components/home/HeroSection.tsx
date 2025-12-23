@@ -1,19 +1,23 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, MapPin, Calendar, Users, Map as MapIcon } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { motion } from "framer-motion";
+import { 
+  Search, MapPin, Calendar, Users, 
+  Compass, Globe, Sparkles, Navigation 
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useLanguage } from "@/components/providers/LanguageProvider"; // ✅ Import Language Hook
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const HeroSection = () => {
   const router = useRouter();
-  const { lang } = useLanguage(); // ✅ Use Language Hook
+  const { lang } = useLanguage();
   
   const [destination, setDestination] = useState("");
   const [date, setDate] = useState<Date>();
@@ -25,141 +29,153 @@ const HeroSection = () => {
     router.push(`/explore?${params.toString()}`);
   };
 
-  // Translations
   const t = {
-    headline: lang === "en" ? "Let's Explore The World With" : "বিশ্বকে ঘুরে দেখুন",
-    highlight: lang === "en" ? "Local Experts" : "লোকাল এক্সপার্টদের সাথে",
+    headline: lang === "en" ? "Crafting Memories with" : "স্মৃতিময় ভ্রমণের সঙ্গী",
+    highlight: lang === "en" ? "Local Experts" : "লোকাল এক্সপার্টরা",
     subHeadline: lang === "en" 
-      ? "Discover authentic experiences, hidden gems, and local culture." 
-      : "খুঁজে নিন অথেনটিক অভিজ্ঞতা, গোপন সৌন্দর্য এবং স্থানীয় সংস্কৃতি।",
-    tours: lang === "en" ? "Tours" : "ট্যুর",
-    guides: lang === "en" ? "Guides" : "গাইড",
-    destination: lang === "en" ? "Destination" : "গন্তব্য",
-    date: lang === "en" ? "Date" : "তারিখ",
+      ? "Experience Bangladesh like never before. Curated journeys led by passionate storytellers." 
+      : "নতুনভাবে আবিষ্কার করুন বাংলাদেশকে। অভিজ্ঞ লোকাল গাইডের সাথে শুরু হোক আপনার যাত্রা।",
+    destination: lang === "en" ? "Where to?" : "কোথায় যাবেন?",
+    date: lang === "en" ? "When?" : "কবে?",
     travelers: lang === "en" ? "Travelers" : "ভ্রমণকারী",
-    search: lang === "en" ? "Search" : "খুঁজুন",
-    whereTo: lang === "en" ? "Where do you want to go?" : "আপনি কোথায় যেতে চান?",
-    pickDate: lang === "en" ? "Pick a date" : "তারিখ বাছুন",
-    person: lang === "en" ? "Person" : "জন",
+    search: lang === "en" ? "Find My Guide" : "গাইড খুঁজুন",
   };
 
   return (
-    <section className="relative h-[650px] flex items-center justify-center">
-      {/* Background Image with Gradient Overlay */}
-      <div 
-        className="absolute inset-0 z-0"
-        style={{ 
-          backgroundImage: 'url("https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-slate-50/10" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
+      
+      {/* --- 🖼️ Cinematic Background with Smart Overlays --- */}
+      <div className="absolute inset-0 z-0 scale-110">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: 'url("https://images.unsplash.com/photo-1506461883276-594a12b11cf3?q=80&w=2070&auto=format&fit=crop")',
+          }}
+        />
+        {/* টেক্সট স্পষ্ট করার জন্য বাম পাশে ডার্ক মাস্ক */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/40 to-transparent z-[1]" />
+        <div className="absolute inset-0 bg-black/30 z-[1]" /> 
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 container px-4">
-        
-        {/* Headline */}
-        <div className="text-center mt-10 mb-10 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-md leading-tight">
-            {t.headline} <br /> <span className="text-primary">{t.highlight}</span>
-          </h1>
-          <p className="text-lg text-slate-200 max-w-2xl mx-auto font-medium">
-            {t.subHeadline}
-          </p>
-        </div>
-
-        {/* ShareTrip Style Search Widget */}
-        <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-5xl mx-auto animate-in zoom-in duration-500">
+      <div className="container relative z-10 px-6 pt-20">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
           
-          {/* Tabs (Optional decorative) */}
-          <div className="flex gap-6 mb-6 border-b pb-4">
-            <button className="flex items-center gap-2 text-primary font-bold border-b-2 border-primary pb-4 -mb-4.5">
-              <MapIcon className="h-5 w-5" /> {t.tours}
-            </button>
-            <button className="flex items-center gap-2 text-slate-500 hover:text-slate-800 font-medium pb-4 -mb-4">
-              <Users className="h-5 w-5" /> {t.guides}
-            </button>
-          </div>
-
-          {/* Input Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            
-            {/* Destination Input */}
-            <div className="md:col-span-4 space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.destination}</label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                <Input 
-                  placeholder={t.whereTo} 
-                  className="pl-10 h-12 text-lg border-slate-200 focus:border-primary bg-slate-50/50"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Date Picker */}
-            <div className="md:col-span-3 space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.date}</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full h-12 justify-start text-left font-normal border-slate-200 bg-slate-50/50",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <Calendar className="mr-2 h-5 w-5 text-slate-400" />
-                    {date ? format(date, "PPP") : <span>{t.pickDate}</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <CalendarComponent
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Guests Input */}
-            <div className="md:col-span-3 space-y-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.travelers}</label>
-              <div className="relative">
-                <Users className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                <Input 
-                  type="number" 
-                  min={1} 
-                  placeholder={`1 ${t.person}`} 
-                  className="pl-10 h-12 text-lg border-slate-200 focus:border-primary bg-slate-50/50"
-                  value={guests}
-                  onChange={(e) => setGuests(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Search Button */}
-            <div className="md:col-span-2">
-              <Button 
-                size="lg" 
-                className="w-full h-12 text-lg font-bold shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all"
-                onClick={handleSearch}
+          {/* --- 📝 Text Content (Ultra-Readability) --- */}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-8"
+          >
+            <div className="space-y-6">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-[0.4em] drop-shadow-md"
               >
-                <Search className="mr-2 h-5 w-5" /> {t.search}
-              </Button>
+                <div className="h-0.5 w-10 bg-emerald-500 rounded-full" />
+                Vistara Expedition Terminal
+              </motion.div>
+              
+              <h1 className="text-5xl md:text-7xl font-bold text-white leading-[1.1] tracking-tight drop-shadow-2xl">
+                {t.headline} <br /> 
+                <span className="text-emerald-500 relative inline-block">
+                  {t.highlight}
+                  <Sparkles className="absolute -top-6 -right-10 h-8 w-8 text-emerald-400 opacity-60 animate-pulse" />
+                </span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-slate-100 max-w-lg leading-relaxed font-medium opacity-100 drop-shadow-lg">
+                {t.subHeadline}
+              </p>
             </div>
 
-          </div>
-        </div>
+            <div className="flex flex-wrap gap-4 pt-4">
+              <BadgeItem icon={Compass} text="500+ Verified Guides" />
+              <BadgeItem icon={Navigation} text="Exclusive Routes" />
+            </div>
+          </motion.div>
 
+          {/* --- 🔍 High-Contrast Search Widget --- */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="relative lg:ml-auto w-full max-w-xl"
+          >
+            <div className="relative bg-slate-900/80 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]">
+              <div className="space-y-8">
+                
+                <div className="space-y-3">
+                  <label className="text-[11px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2 ml-1">
+                    <MapPin className="h-3.5 w-3.5" /> {t.destination}
+                  </label>
+                  <Input 
+                    placeholder="e.g. Sylhet, Bandarban..." 
+                    className="bg-white/5 border-white/20 text-white placeholder:text-slate-400 h-14 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 text-lg transition-all"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="text-[11px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2 ml-1">
+                      <Calendar className="h-3.5 w-3.5" /> {t.date}
+                    </label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full h-14 justify-start bg-white/5 border-white/20 rounded-2xl text-slate-100 hover:bg-white/10 hover:text-white"
+                        >
+                          {date ? format(date, "MMM dd, yyyy") : "Select Date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 rounded-2xl border-slate-800 bg-slate-900 text-white shadow-2xl">
+                        <CalendarComponent mode="single" selected={date} onSelect={setDate} initialFocus />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[11px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2 ml-1">
+                      <Users className="h-3.5 w-3.5" /> {t.travelers}
+                    </label>
+                    <Input 
+                      type="number" 
+                      min={1} 
+                      className="bg-white/5 border-white/20 text-white h-14 rounded-2xl focus:ring-2 focus:ring-emerald-500/50"
+                      value={guests}
+                      onChange={(e) => setGuests(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={handleSearch}
+                  className="w-full h-16 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xl rounded-2xl shadow-xl shadow-emerald-500/30 transition-all active:scale-[0.98] border-none"
+                >
+                  <Search className="mr-3 h-6 w-6 stroke-[3px]" />
+                  {t.search}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50/10 to-transparent z-10" />
     </section>
   );
 };
+
+const BadgeItem = ({ icon: Icon, text }: { icon: any; text: string }) => (
+  <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full shadow-lg">
+    <Icon className="h-4 w-4 text-emerald-400" />
+    <span className="text-xs font-bold text-white tracking-wide uppercase">{text}</span>
+  </div>
+);
 
 export default HeroSection;
