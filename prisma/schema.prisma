@@ -30,67 +30,67 @@ enum PaymentStatus {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String
-  name          String
-  role          Role      @default(TOURIST)
-  profileImage  String?
-  bio           String?
-  phone         String?
-  languages     String[]  @default([])
+  id                String    @id @default(cuid())
+  email             String    @unique
+  password          String
+  name              String
+  role              Role      @default(TOURIST)
+  profileImage      String?
+  bio               String?
+  phone             String?
+  languages         String[]  @default([])
   
   // Guide specific fields
-  expertise     String[]  @default([])
-  dailyRate     Float?
-  isVerified    Boolean   @default(false)
-  totalEarnings Float     @default(0)
+  expertise         String[]  @default([])
+  dailyRate         Float?
+  isVerified        Boolean   @default(false)
+  totalEarnings     Float     @default(0)
   
   // Tourist specific fields
   travelPreferences String[]  @default([])
   
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
   
-  listings      Listing[]
+  listings          Listing[]
   bookingsAsTourist Booking[] @relation("TouristBookings")
   bookingsAsGuide   Booking[] @relation("GuideBookings")
-  reviews       Review[]  @relation("ReviewsByUser")
-  reviewsReceived Review[] @relation("ReviewsForGuide")
+  reviews           Review[]  @relation("ReviewsByUser")
+  reviewsReceived   Review[]  @relation("ReviewsForGuide")
   
-  // ✅ Added Wishlist Relation
-  wishlist      Wishlist[] 
+  // Wishlist Relations
+  wishlist          Wishlist[] @relation("UserWishlist")     // Items saved by this user
+  wishlistedAsGuide Wishlist[] @relation("GuideWishlisted") // This user saved as a guide by others
   
   @@index([email])
   @@index([role])
 }
 
 model Listing {
-  id            String    @id @default(cuid())
-  title         String
-  description   String    @db.Text
-  itinerary     String?   @db.Text
-  tourFee       Float
-  duration      Int       // in days
-  maxGroupSize  Int
-  meetingPoint  String
-  city          String
-  country       String
-  category      String[]  @default([])
-  images        String[]  @default([])
-  isActive      Boolean   @default(true)
+  id               String    @id @default(cuid())
+  title            String
+  description      String    @db.Text
+  itinerary        String?   @db.Text
+  tourFee          Float
+  duration         Int       
+  maxGroupSize     Int
+  meetingPoint     String
+  city             String
+  country          String
+  category         String[]  @default([])
+  images           String[]  @default([])
+  isActive         Boolean   @default(true)
   
-  guideId       String
-  guide         User      @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  guideId          String
+  guide            User      @relation(fields: [guideId], references: [id], onDelete: Cascade)
   
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
   
-  bookings      Booking[]
-  reviews       Review[]
+  bookings         Booking[]
+  reviews          Review[]
   
-  // ✅ Added Wishlist Relation
-  wishlist      Wishlist[]
+  wishlist         Wishlist[]
 
   unavailableDates DateTime[] @default([])
 
@@ -100,27 +100,27 @@ model Listing {
 }
 
 model Booking {
-  id            String        @id @default(cuid())
-  bookingDate   DateTime
-  numberOfPeople Int          @default(1)
-  totalAmount   Float
-  status        BookingStatus @default(PENDING)
-  message       String?       @db.Text
+  id             String        @id @default(cuid())
+  bookingDate    DateTime
+  numberOfPeople Int           @default(1)
+  totalAmount    Float
+  status         BookingStatus @default(PENDING)
+  message        String?       @db.Text
   
-  touristId     String
-  tourist       User          @relation("TouristBookings", fields: [touristId], references: [id], onDelete: Cascade)
+  touristId      String
+  tourist        User          @relation("TouristBookings", fields: [touristId], references: [id], onDelete: Cascade)
   
-  guideId       String
-  guide         User          @relation("GuideBookings", fields: [guideId], references: [id], onDelete: Cascade)
+  guideId        String
+  guide          User          @relation("GuideBookings", fields: [guideId], references: [id], onDelete: Cascade)
   
-  listingId     String
-  listing       Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId      String
+  listing        Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
   
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   
-  payment       Payment?
-  review        Review? // Optional One-to-One Relation
+  payment        Payment?
+  review         Review? 
   
   @@index([touristId])
   @@index([guideId])
@@ -146,25 +146,24 @@ model Payment {
 }
 
 model Review {
-  id            String    @id @default(cuid())
-  rating        Int       // 1-5
-  comment       String    @db.Text
+  id             String    @id @default(cuid())
+  rating         Int       
+  comment        String    @db.Text
   
-  userId        String
-  user          User      @relation("ReviewsByUser", fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User      @relation("ReviewsByUser", fields: [userId], references: [id], onDelete: Cascade)
   
-  guideId       String
-  guide         User      @relation("ReviewsForGuide", fields: [guideId], references: [id], onDelete: Cascade)
+  guideId        String
+  guide          User      @relation("ReviewsForGuide", fields: [guideId], references: [id], onDelete: Cascade)
 
-  listingId     String
-  listing       Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId      String
+  listing        Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
   
-  // Optional booking link
-  bookingId     String?   @unique
-  booking       Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId      String?   @unique
+  booking        Booking?  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   
   @@index([userId])
   @@index([guideId])
@@ -175,15 +174,24 @@ model Review {
 model Wishlist {
   id        String   @id @default(cuid())
   
+  // The User (Tourist) who is performing the action
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserWishlist", fields: [userId], references: [id], onDelete: Cascade)
   
-  listingId String
-  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  // For saving a specific Tour Package (Optional)
+  listingId String?
+  listing   Listing? @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  // For saving a specific Guide Profile (Optional)
+  guideId   String?
+  guide     User?    @relation("GuideWishlisted", fields: [guideId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
+  // Constraints to prevent duplicate entries
   @@unique([userId, listingId]) 
+  @@unique([userId, guideId])
   @@index([userId])
   @@index([listingId])
+  @@index([guideId])
 }
