@@ -1,102 +1,188 @@
 "use client";
 
-import { Search, CalendarCheck, Map, ArrowRight } from "lucide-react";
+import { 
+  Search, 
+  TicketCheck, 
+  MapPin, 
+  Sparkles, 
+  ChevronRight,
+  ShieldCheck,
+  Globe
+} from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function HowItWorks() {
-  const { lang } = useLanguage();
+  const { lang, t: translate } = useLanguage() as any;
 
-  // 1. Translations Data
+  // 1. Professional Content Data
   const content = {
     en: {
-      heading: "Plan Your Trip in 3 Steps",
-      subHeading: "Simple, fast, and secure booking process.",
+      badge: "Process",
+      heading: "Your Journey in 3 Simple Steps",
+      subHeading: "We've streamlined everything so you can focus on the adventure.",
       steps: [
-        { title: "Search", desc: "Find the perfect tour from our curated list of local experiences." },
-        { title: "Book", desc: "Select your preferred date and book securely in just a few clicks." },
-        { title: "Enjoy", desc: "Meet your local guide and create unforgettable memories." }
+        { 
+          title: "Discover Local Gems", 
+          desc: "Browse through hundreds of curated tours and hidden spots led by verified experts.",
+          color: "emerald" 
+        },
+        { 
+          title: "Secure Your Spot", 
+          desc: "Instant booking with protected payments and flexible cancellation policies.",
+          color: "indigo" 
+        },
+        { 
+          title: "Experience Bangladesh", 
+          desc: "Meet your guide, skip the queues, and dive into authentic local culture.",
+          color: "rose" 
+        }
       ]
     },
     bn: {
-      heading: "৩টি সহজ ধাপে ভ্রমণ পরিকল্পনা করুন",
-      subHeading: "সহজ, দ্রুত এবং নিরাপদ বুকিং প্রক্রিয়া।",
+      badge: "কার্যপদ্ধতি",
+      heading: "৩টি সহজ ধাপে আপনার যাত্রা শুরু করুন",
+      subHeading: "আমরা সবকিছু সহজ করে দিয়েছি যাতে আপনি কেবল ভ্রমণের আনন্দ উপভোগ করতে পারেন।",
       steps: [
-        { title: "খুঁজুন", desc: "আমাদের লোকাল এক্সপেরিয়েন্সের তালিকা থেকে আপনার পছন্দের ট্যুরটি খুঁজুন।" },
-        { title: "বুক করুন", desc: "আপনার পছন্দের তারিখ নির্বাচন করুন এবং নিরাপদে বুকিং নিশ্চিত করুন।" },
-        { title: "উপভোগ করুন", desc: "আপনার লোকাল গাইডের সাথে দেখা করুন এবং স্মৃতিময় ভ্রমণ উপভোগ করুন।" }
+        { 
+          title: "সেরা জায়গা খুঁজুন", 
+          desc: "ভেরিফাইড বিশেষজ্ঞদের দ্বারা পরিচালিত শত শত ট্যুর এবং লুকানো সৌন্দর্য খুঁজে নিন।",
+          color: "emerald" 
+        },
+        { 
+          title: "বুকিং নিশ্চিত করুন", 
+          desc: "সুরক্ষিত পেমেন্ট এবং সহজ ক্যান্সেলেশন পলিসির মাধ্যমে দ্রুত বুকিং সম্পন্ন করুন।",
+          color: "indigo" 
+        },
+        { 
+          title: "স্মৃতি তৈরি করুন", 
+          desc: "আপনার গাইডের সাথে দেখা করুন এবং বাংলাদেশের আসল সংস্কৃতিকে কাছ থেকে দেখুন।",
+          color: "rose" 
+        }
       ]
     }
   };
 
-  const t = content[lang];
-
-  // Icons Array (Static)
-  const icons = [Search, CalendarCheck, Map];
+  const t = content[lang === 'bn' ? 'bn' : 'en'];
+  const icons = [Search, TicketCheck, Globe];
 
   return (
-    <section className="py-24 px-4 bg-white relative overflow-hidden">
+    <section className="py-24 bg-[#f8fafc] relative overflow-hidden">
       
-      {/* Background Decorative Blobs */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30">
-        <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
-      </div>
+      {/* --- Abstract Background Elements --- */}
+      <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[600px] h-[600px] bg-emerald-50 rounded-full blur-[120px] opacity-60" />
+      <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[500px] h-[500px] bg-indigo-50 rounded-full blur-[100px] opacity-60" />
 
-      <div className="container relative z-10">
+      <div className="container mx-auto px-4 relative z-10">
         
-        {/* Header */}
-        <div className="text-center mb-20 max-w-2xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight leading-tight">
+        {/* --- Section Header --- */}
+        <div className="text-center mb-20 max-w-3xl mx-auto space-y-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-[10px] font-black uppercase tracking-[0.2em]"
+          >
+            <Sparkles className="h-3 w-3 fill-emerald-600" /> {t.badge}
+          </motion.div>
+          
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1]"
+          >
             {t.heading}
-          </h2>
-          <p className="text-lg text-slate-500">
+          </motion.h2>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-lg text-slate-500 font-medium italic opacity-80"
+          >
             {t.subHeading}
-          </p>
+          </motion.p>
         </div>
 
-        {/* Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
-          
-          {/* Connector Line (Desktop Only) */}
-          <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-slate-200 via-primary/20 to-slate-200 -z-10 border-t-2 border-dashed border-slate-300" />
-
+        {/* --- Steps Layout --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {t.steps.map((step, index) => {
             const Icon = icons[index];
+            
             return (
               <motion.div 
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.2, duration: 0.5 }}
-                className="flex flex-col items-center text-center group"
+                transition={{ delay: index * 0.15 }}
+                className="group relative"
               >
-                {/* Icon Circle */}
-                <div className="relative mb-6">
-                  <div className="h-24 w-24 bg-white rounded-full flex items-center justify-center shadow-lg shadow-slate-200 border border-slate-100 group-hover:scale-110 transition-transform duration-300 z-10 relative">
-                    <div className="h-20 w-20 bg-primary/5 rounded-full flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                       <Icon className="h-10 w-10 text-primary" />
+                {/* Connector Arrow (Desktop) */}
+                {index < 2 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-6 -translate-y-1/2 z-20">
+                    <ChevronRight className="h-8 w-8 text-slate-200 animate-pulse" />
+                  </div>
+                )}
+
+                {/* Card Design */}
+                <div className="h-full p-8 md:p-10 bg-white/60 backdrop-blur-md rounded-[2.5rem] border border-white shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-emerald-200/40 transition-all duration-500 group-hover:-translate-y-2 relative overflow-hidden">
+                  
+                  {/* Step Counter Background */}
+                  <span className="absolute -top-4 -right-4 text-[120px] font-black text-slate-50 opacity-[0.03] select-none group-hover:opacity-[0.05] transition-opacity">
+                    0{index + 1}
+                  </span>
+
+                  <div className="relative z-10 flex flex-col items-center lg:items-start text-center lg:text-left">
+                    {/* Icon Container */}
+                    <div className={cn(
+                      "h-16 w-16 rounded-2xl flex items-center justify-center mb-8 shadow-lg transition-transform group-hover:rotate-6 duration-500",
+                      index === 0 ? "bg-emerald-500 text-white shadow-emerald-200" :
+                      index === 1 ? "bg-indigo-500 text-white shadow-indigo-200" :
+                      "bg-rose-500 text-white shadow-rose-200"
+                    )}>
+                      <Icon className="h-8 w-8" />
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-emerald-600 transition-colors">
+                      {step.title}
+                    </h3>
+                    
+                    <p className="text-slate-500 leading-relaxed font-medium">
+                      {step.desc}
+                    </p>
+
+                    {/* Quality Badges */}
+                    <div className="mt-8 pt-6 border-t border-slate-50 w-full flex items-center gap-4 justify-center lg:justify-start">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                           <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" /> Secure
+                        </div>
+                        <div className="w-1 h-1 rounded-full bg-slate-200" />
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                           <Sparkles className="h-3.5 w-3.5 text-indigo-400" /> Best Price
+                        </div>
                     </div>
                   </div>
-                  
-                  {/* Step Badge */}
-                  <div className="absolute -top-2 -right-2 h-8 w-8 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-sm border-4 border-white shadow-sm z-20">
-                    {index + 1}
-                  </div>
                 </div>
-
-                {/* Content */}
-                <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-primary transition-colors">
-                  {step.title}
-                </h3>
-                <p className="text-slate-500 leading-relaxed max-w-xs mx-auto">
-                  {step.desc}
-                </p>
               </motion.div>
             );
           })}
         </div>
+
+        {/* --- Trust Footer (Optional) --- */}
+        <motion.div 
+           initial={{ opacity: 0 }}
+           whileInView={{ opacity: 1 }}
+           className="mt-20 flex flex-wrap justify-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500"
+        >
+          <div className="flex items-center gap-2 font-black text-slate-900"><ShieldCheck className="h-5 w-5" /> VERIFIED GUIDES</div>
+          <div className="flex items-center gap-2 font-black text-slate-900"><MapPin className="h-5 w-5" /> 50+ CITIES</div>
+          <div className="flex items-center gap-2 font-black text-slate-900"><Globe className="h-5 w-5" /> LOCALLY OWNED</div>
+        </motion.div>
 
       </div>
     </section>
