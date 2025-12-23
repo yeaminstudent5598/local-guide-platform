@@ -45,9 +45,42 @@ const updateMe = catchAsync(async (req: Request) => {
   const result = await UserService.updateProfile(user.id, body);
   return sendResponse({ statusCode: StatusCodes.OK, success: true, message: "Profile updated", data: result });
 });
+
+
+const getUserById = catchAsync(async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
+  
+  if (!id) {
+    return sendResponse({
+      statusCode: StatusCodes.BAD_REQUEST,
+      success: false,
+      message: "User ID is required",
+      data: null,
+    });
+  }
+
+  const result = await UserService.getUserById(id);
+  
+  if (!result) {
+    return sendResponse({
+      statusCode: StatusCodes.NOT_FOUND,
+      success: false,
+      message: "User not found",
+      data: null,
+    });
+  }
+
+  return sendResponse({
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "User retrieved successfully",
+    data: result,
+  });
+});
 export const UserController = {
   getAllUsers,
   deleteUser,
   getMe,
   updateMe,
+  getUserById,
 };
