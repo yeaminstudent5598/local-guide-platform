@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-// 1. Get All Users (Admin Only)
+// 1. Get All Users
 const getAllUsers = async () => {
   const result = await prisma.user.findMany({
     select: {
@@ -8,20 +8,39 @@ const getAllUsers = async () => {
       name: true,
       email: true,
       role: true,
+      profileImage: true,
+      bio: true,
+      expertise: true,
+      dailyRate: true,
       isVerified: true,
-      createdAt: true,
+      languages: true,
+      reviewsReceived: {
+        select: {
+          rating: true,
+        },
+      },
       _count: {
         select: {
-          listings: true, // কতগুলো লিস্টিং আছে
-          bookingsAsTourist: true, // কতগুলো বুকিং দিয়েছে
+          reviewsReceived: true,
+          listings: true,
         },
       },
     },
     orderBy: { createdAt: "desc" },
   });
-  return result;
-};
 
+  return result.map((user) => {
+    const totalReviews = user.reviewsReceived.length;
+    const avgRating = totalReviews > 0 
+      ? user.reviewsReceived.reduce((acc, curr) => acc + curr.rating, 0) / totalReviews 
+      : 0;
+
+    return {
+      ...user,
+      rating: avgRating,
+    };
+  });
+};
 // 2. Delete User
 const deleteUser = async (id: string) => {
   const result = await prisma.user.delete({
