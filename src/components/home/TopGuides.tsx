@@ -75,7 +75,7 @@ const TopGuides = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-[10px] font-black uppercase tracking-widest"
           >
-            <Sparkles className="h-3 w-3 fill-emerald-600" /> Professional Experts
+            <span className="flex items-center gap-1.5"><Sparkles className="h-3 w-3 fill-emerald-600" /> Professional Experts</span>
           </motion.div>
           <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
             {labels.heading}
@@ -106,7 +106,11 @@ const TopGuides = () => {
                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/30 to-transparent" />
                        <div className="absolute -bottom-12 left-8">
                           <Avatar className="h-24 w-24 border-[5px] border-white shadow-xl bg-white">
-                            <AvatarImage src={guide.profileImage || ""} className="object-cover" />
+                            {/* ফিক্সড: যদি profileImage না থাকে তবে প্লেসহোল্ডার ইমেজ দেখাবে */}
+                            <AvatarImage 
+                              src={guide.profileImage || "https://i.ibb.co/5GzXkwq/user-placeholder.png"} 
+                              className="object-cover" 
+                            />
                             <AvatarFallback className="bg-emerald-50 text-emerald-700 font-black text-xl">
                               {guide.name.charAt(0)}
                             </AvatarFallback>
@@ -163,7 +167,7 @@ const TopGuides = () => {
                               <p className="text-lg font-black text-slate-900 leading-none">{guide._count?.reviewsReceived || 0}</p>
                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-1">{labels.reviews}</p>
                            </div>
-                           <div className="w-[px] h-8 bg-slate-100" />
+                           <div className="w-[1px] h-8 bg-slate-100" />
                            <div className="text-center">
                               <p className="text-lg font-black text-slate-900 leading-none">{guide._count?.listings || 0}</p>
                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-1">{labels.tours}</p>
