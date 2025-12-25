@@ -10,14 +10,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  CheckCircle, XCircle, CreditCard, Calendar, MapPin, Trash2, User 
+  CheckCircle, XCircle, CreditCard, Calendar, MapPin, Trash2, User, Sparkles, Loader2, History
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
 import { format } from "date-fns";
-import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useLanguage } from "@/components/providers/LanguageProvider"; // ✅ Added Language Hook
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { cn } from "@/lib/utils";
 
 // Interfaces
 interface Booking {
@@ -47,40 +47,40 @@ interface BookingsListProps {
 }
 
 export default function BookingsList({ initialBookings, userRole }: BookingsListProps) {
-  const { lang } = useLanguage(); // ✅ Language Context
+  const { lang } = useLanguage();
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true); 
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setLoading(false), 800); 
+    return () => clearTimeout(timer);
   }, []);
 
-  // Translations
+  // Translations Object (Fix: added 'role' property)
   const t = {
-    title: lang === 'en' ? "All Bookings" : "সকল বুকিং",
-    desc: lang === 'en' ? "Manage your trips and booking requests." : "আপনার ভ্রমণ এবং বুকিং রিকোয়েস্ট ম্যানেজ করুন।",
-    noBookings: lang === 'en' ? "No bookings found." : "কোনো বুকিং পাওয়া যায়নি।",
-    headers: {
-      tour: lang === 'en' ? "Tour Info" : "ট্যুর তথ্য",
-      user: lang === 'en' ? "User" : "ব্যবহারকারী",
-      date: lang === 'en' ? "Date" : "তারিখ",
-      guests: lang === 'en' ? "Guests" : "অতিথি",
-      total: lang === 'en' ? "Total" : "মোট",
-      status: lang === 'en' ? "Status" : "অবস্থা",
-      action: lang === 'en' ? "Actions" : "অ্যাকশন",
-    },
-    role: {
+    title: lang === 'en' ? "Journey History" : "ভ্রমণ ইতিহাস",
+    desc: lang === 'en' ? "Manage your upcoming trips and verified bookings." : "আপনার আসন্ন ভ্রমণ এবং যাচাইকৃত বুকিং পরিচালনা করুন।",
+    noBookings: lang === 'en' ? "No records found in registry." : "খাতায় কোনো বুকিং পাওয়া যায়নি।",
+    role: { // ✅ এই অংশটি মিসিং ছিল যা এরর তৈরি করছিল
       tourist: lang === 'en' ? "Tourist" : "ট্যুরিস্ট",
-      guide: lang === 'en' ? "Guide" : "গাইড",
+      guide: lang === 'en' ? "Local Guide" : "লোকাল গাইড",
+    },
+    headers: {
+      tour: lang === 'en' ? "Tour Identity" : "ট্যুর তথ্য",
+      user: lang === 'en' ? "Partner" : "পার্টনার",
+      date: lang === 'en' ? "Schedule" : "সময়সূচী",
+      total: lang === 'en' ? "Pricing" : "মূল্য",
+      status: lang === 'en' ? "Status" : "অবস্থা",
+      action: lang === 'en' ? "Control" : "নিয়ন্ত্রণ",
     },
     actions: {
-      accept: lang === 'en' ? "Accept" : "গ্রহণ করুন",
-      reject: lang === 'en' ? "Reject" : "বাতিল করুন",
-      pay: lang === 'en' ? "Pay Now" : "পেমেন্ট করুন",
-      cancel: lang === 'en' ? "Cancel" : "ক্যান্সেল",
-      done: lang === 'en' ? "Done" : "সম্পন্ন",
+      accept: lang === 'en' ? "Confirm" : "নিশ্চিত",
+      reject: lang === 'en' ? "Decline" : "বাতিল",
+      pay: lang === 'en' ? "Secure Pay" : "পেমেন্ট",
+      cancel: lang === 'en' ? "Abort" : "বন্ধ",
+      done: lang === 'en' ? "Archived" : "আর্কাইভ",
     },
     status: {
       CONFIRMED: lang === 'en' ? "Confirmed" : "নিশ্চিত",
@@ -92,22 +92,18 @@ export default function BookingsList({ initialBookings, userRole }: BookingsList
     }
   };
 
-  // Payment Callback
+  // Payment Callback Logic
   useEffect(() => {
     const status = searchParams.get("status");
     if (status === "success") {
-      toast.success(lang === 'en' ? "Payment successful! Trip confirmed." : "পেমেন্ট সফল! ট্রিপ নিশ্চিত হয়েছে।");
-      router.replace("/dashboard/bookings");
-    } else if (status === "failed") {
-      toast.error(lang === 'en' ? "Payment failed." : "পেমেন্ট ব্যর্থ হয়েছে।");
+      toast.success(lang === 'en' ? "Payment verified! Journey unlocked." : "পেমেন্ট যাচাইকৃত! ভ্রমণ আনলক হয়েছে।");
       router.replace("/dashboard/bookings");
     }
   }, [searchParams, router, lang]);
 
-  // Handlers
   const handleStatus = async (id: string, newStatus: string) => {
     const token = localStorage.getItem("accessToken");
-    const toastId = toast.loading(lang === 'en' ? "Updating..." : "আপডেট হচ্ছে...");
+    const toastId = toast.loading(lang === 'en' ? "Syncing status..." : "সিঙ্ক হচ্ছে...");
     try {
       const res = await fetch(`/api/v1/bookings/${id}`, {
         method: "PATCH",
@@ -115,14 +111,14 @@ export default function BookingsList({ initialBookings, userRole }: BookingsList
         body: JSON.stringify({ status: newStatus }),
       });
       if (res.ok) {
-        toast.success(lang === 'en' ? "Updated successfully" : "সফলভাবে আপডেট হয়েছে", { id: toastId });
+        toast.success("Registry updated", { id: toastId });
         setBookings(prev => prev.map(b => b.id === id ? { ...b, status: newStatus as any } : b));
-      } else throw new Error("Failed");
-    } catch { toast.error(lang === 'en' ? "Update failed" : "আপডেট ব্যর্থ হয়েছে", { id: toastId }); }
+      }
+    } catch { toast.error("Sync failed", { id: toastId }); }
   };
 
   const handlePayment = async (bookingId: string) => {
-    const toastId = toast.loading(lang === 'en' ? "Redirecting..." : "রিডাইরেক্ট হচ্ছে...");
+    const toastId = toast.loading("Initiating secure gateway...");
     try {
       const token = localStorage.getItem("accessToken");
       const res = await fetch("/api/v1/payments/init", {
@@ -132,157 +128,170 @@ export default function BookingsList({ initialBookings, userRole }: BookingsList
       });
       const data = await res.json();
       if (data.success) window.location.href = data.data.url;
-      else throw new Error("Init failed");
-    } catch { toast.error(lang === 'en' ? "Payment failed" : "পেমেন্ট ব্যর্থ হয়েছে", { id: toastId }); }
+    } catch { toast.error("Gateway error", { id: toastId }); }
   };
 
-  // Badge Helper (Localized)
   const getStatusBadge = (status: string) => {
     const styles: any = {
-      CONFIRMED: "bg-green-100 text-green-700 border-green-200",
+      CONFIRMED: "bg-emerald-100 text-emerald-700 border-emerald-200",
       ACCEPTED: "bg-blue-100 text-blue-700 border-blue-200",
-      PENDING: "bg-yellow-100 text-yellow-700 border-yellow-200",
-      CANCELLED: "bg-red-100 text-red-700 border-red-200",
+      PENDING: "bg-amber-100 text-amber-700 border-amber-200",
+      CANCELLED: "bg-rose-100 text-rose-700 border-rose-200",
       REJECTED: "bg-slate-100 text-slate-500 border-slate-200",
       COMPLETED: "bg-purple-100 text-purple-700 border-purple-200",
     };
-    // @ts-ignore - dynamic key access
-    const label = t.status[status] || status;
-    
-    return <Badge variant="outline" className={`${styles[status]} font-semibold text-[10px] md:text-xs whitespace-nowrap`}>{label}</Badge>;
+    // @ts-ignore
+    const label = t.status[status as keyof typeof t.status] || status;
+    return <Badge variant="outline" className={cn("font-black text-[9px] uppercase tracking-tighter px-3 py-1 rounded-full shadow-sm", styles[status])}>{label}</Badge>;
   };
 
-  // Actions Helper
   const renderActions = (booking: Booking, isMobile = false) => {
     const actions = [];
-
     if (userRole === "GUIDE" && booking.status === "PENDING") {
       actions.push(
-        <Button key="accept" size="sm" onClick={() => handleStatus(booking.id, "ACCEPTED")} className="bg-green-600 hover:bg-green-700 text-white h-8 text-xs">{t.actions.accept}</Button>,
-        <Button key="reject" size="sm" variant="outline" onClick={() => handleStatus(booking.id, "REJECTED")} className="text-red-600 border-red-200 hover:bg-red-50 h-8 text-xs">{t.actions.reject}</Button>
+        <Button key="accept" size="sm" onClick={() => handleStatus(booking.id, "ACCEPTED")} className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl h-9 px-4 font-bold shadow-lg shadow-emerald-900/10 border-none">{t.actions.accept}</Button>,
+        <Button key="reject" size="sm" variant="outline" onClick={() => handleStatus(booking.id, "REJECTED")} className="text-rose-500 border-rose-100 hover:bg-rose-50 rounded-xl h-9 px-4 font-bold">{t.actions.reject}</Button>
       );
     }
     if (userRole === "TOURIST") {
       if (booking.status === "ACCEPTED") {
-        actions.push(
-           <Button key="pay" size="sm" onClick={() => handlePayment(booking.id)} className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm h-8 text-xs">{t.actions.pay}</Button>
-        );
+        actions.push(<Button key="pay" size="sm" onClick={() => handlePayment(booking.id)} className="bg-slate-900 hover:bg-emerald-600 text-white rounded-xl h-10 px-6 font-bold shadow-xl border-none group"> {t.actions.pay} <CreditCard className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" /> </Button>);
       }
       if (booking.status === "PENDING") {
-        actions.push(
-           <Button key="cancel" size="sm" variant="ghost" onClick={() => handleStatus(booking.id, "CANCELLED")} className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-2 text-xs">{t.actions.cancel}</Button>
-        );
+        actions.push(<Button key="cancel" size="sm" variant="ghost" onClick={() => handleStatus(booking.id, "CANCELLED")} className="text-rose-400 hover:text-rose-600 hover:bg-rose-50 font-bold px-4">{t.actions.cancel}</Button>);
       }
     }
-
-    if (actions.length === 0) return <span className="text-xs text-slate-400 italic">{t.actions.done}</span>;
-    return <div className={`flex gap-2 ${isMobile ? 'justify-between w-full mt-4 border-t pt-3' : 'justify-end'}`}>{actions}</div>;
+    if (actions.length === 0) return <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{t.actions.done}</span>;
+    return <div className={cn("flex gap-3", isMobile ? 'justify-between w-full mt-5 pt-4 border-t' : 'justify-end')}>{actions}</div>;
   };
 
-  if (!mounted) return null;
+  if (loading) return <BookingsSkeleton />;
 
   return (
-    <div className="space-y-6">
-      
-      {/* --- 1. DESKTOP TABLE VIEW (Image Removed) --- */}
-      <Card className="hidden md:block shadow-sm border-slate-200">
-        <CardHeader className="border-b px-6 py-4">
-          <CardTitle>{t.title}</CardTitle>
-          <CardDescription>{t.desc}</CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto w-full">
-             <Table className="min-w-[900px]">
-                <TableHeader>
-                  <TableRow className="bg-slate-50/50 hover:bg-slate-50/50">
-                    <TableHead className="pl-6">{t.headers.tour}</TableHead>
-                    <TableHead>{t.headers.user}</TableHead>
-                    <TableHead>{t.headers.date}</TableHead>
-                    <TableHead>{t.headers.guests}</TableHead>
-                    <TableHead>{t.headers.total}</TableHead>
-                    <TableHead>{t.headers.status}</TableHead>
-                    <TableHead className="text-right pr-6">{t.headers.action}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bookings.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                        {t.noBookings}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    bookings.map((booking) => (
-                      <TableRow key={booking.id} className="hover:bg-slate-50/30">
-                        <TableCell className="pl-6 py-4">
-                           <div>
-                              <p className="font-semibold text-slate-900 text-sm">{booking.listing.title}</p>
-                              <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                                 <MapPin className="h-3 w-3"/> {booking.listing.city}
-                              </p>
-                           </div>
-                        </TableCell>
-                        <TableCell>
-                           <div className="flex items-center gap-2">
-                              {userRole === "GUIDE" && <Avatar className="h-6 w-6"><AvatarImage src={booking.tourist.profileImage}/><AvatarFallback className="text-[10px]">U</AvatarFallback></Avatar>}
-                              <div className="flex flex-col">
-                                 <span className="text-sm font-medium">{userRole === "GUIDE" ? booking.tourist.name : booking.guide.name}</span>
-                                 <span className="text-[10px] text-slate-400 uppercase">{userRole === "GUIDE" ? t.role.tourist : t.role.guide}</span>
-                              </div>
-                           </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-slate-600 whitespace-nowrap">
-                           {format(new Date(booking.bookingDate), "MMM dd, yyyy")}
-                        </TableCell>
-                        <TableCell><span className="text-sm text-slate-600">{booking.numberOfPeople}</span></TableCell>
-                        <TableCell><span className="font-bold text-slate-900">৳{booking.totalAmount}</span></TableCell>
-                        <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                        <TableCell className="text-right pr-6">{renderActions(booking)}</TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-             </Table>
+    <div className="space-y-8 animate-in fade-in duration-700 bg-[#F8FAFB] min-h-screen p-4 md:p-8">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-8">
+        <div>
+          <div className="flex items-center gap-2 text-emerald-600 font-bold text-[10px] uppercase tracking-[0.3em] mb-1">
+               <History className="h-3 w-3" /> Audit Logs
           </div>
+          <h2 className="text-4xl font-black tracking-tight text-slate-900">{t.title}</h2>
+          <p className="text-sm font-medium text-slate-500 italic mt-1">{t.desc}</p>
+        </div>
+        <Badge variant="outline" className="bg-white border-slate-100 px-4 py-2 rounded-2xl shadow-sm text-xs font-black uppercase tracking-widest text-slate-400">
+           Verified Records: {bookings.length}
+        </Badge>
+      </div>
+
+      {/* Desktop View */}
+      <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[2.5rem] overflow-hidden bg-white hidden md:block">
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader className="bg-slate-50/50">
+              <TableRow className="border-slate-50">
+                <TableHead className="pl-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">{t.headers.tour}</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.headers.user}</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.headers.date}</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.headers.total}</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.headers.status}</TableHead>
+                <TableHead className="text-right pr-10 text-[10px] font-black uppercase tracking-widest text-slate-400">{t.headers.action}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {bookings.length === 0 ? (
+                <TableRow><TableCell colSpan={7} className="h-64 text-center font-bold text-slate-300 italic">{t.noBookings}</TableCell></TableRow>
+              ) : (
+                bookings.map((booking) => (
+                  <TableRow key={booking.id} className="group hover:bg-slate-50/50 transition-all border-slate-50">
+                    <TableCell className="pl-10 py-6">
+                      <div className="space-y-1">
+                        <p className="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{booking.listing.title}</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter flex items-center gap-1">
+                           <MapPin className="h-3 w-3 text-emerald-500"/> {booking.listing.city}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                       <div className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9 border-2 border-white shadow-sm">
+                             <AvatarImage src={booking.tourist.profileImage}/>
+                             <AvatarFallback className="bg-emerald-50 text-emerald-700 font-bold">{booking.tourist.name[0]}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                             <span className="text-xs font-black text-slate-900">{userRole === "GUIDE" ? booking.tourist.name : booking.guide.name}</span>
+                             <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{userRole === "GUIDE" ? t.role.tourist : t.role.guide}</span>
+                          </div>
+                       </div>
+                    </TableCell>
+                    <TableCell className="text-xs font-bold text-slate-400 whitespace-nowrap">
+                       {format(new Date(booking.bookingDate), "MMM dd, yyyy")}
+                    </TableCell>
+                    <TableCell><span className="font-black text-slate-900">৳{booking.totalAmount}</span></TableCell>
+                    <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                    <TableCell className="text-right pr-10">{renderActions(booking)}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
-      {/* --- 2. MOBILE CARD VIEW (Image Removed) --- */}
-      <div className="md:hidden space-y-3">
-         {bookings.length === 0 ? (
-            <div className="text-center py-10 text-slate-500 border-2 border-dashed rounded-lg">{t.noBookings}</div>
-         ) : (
-            bookings.map((booking) => (
-               <Card key={booking.id} className="shadow-sm border-slate-200">
-                  <CardContent className="p-4">
-                     <div className="flex justify-between items-start mb-2">
-                        <div>
-                           <h4 className="font-bold text-sm text-slate-900 line-clamp-1">{booking.listing.title}</h4>
-                           <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
-                              <Calendar className="h-3 w-3" /> {format(new Date(booking.bookingDate), "PPP")}
-                           </p>
-                        </div>
-                        {getStatusBadge(booking.status)}
-                     </div>
-                     
-                     <div className="flex justify-between items-center text-sm mt-4 bg-slate-50 p-2 rounded-md">
-                        <div>
-                           <span className="text-xs text-slate-400 block">{t.headers.user}</span>
-                           <span className="font-medium text-slate-700">{userRole === "GUIDE" ? booking.tourist.name : booking.guide.name}</span>
-                        </div>
-                        <div className="text-right">
-                           <span className="text-xs text-slate-400 block">{t.headers.total}</span>
-                           <span className="font-bold text-slate-900">৳{booking.totalAmount}</span>
+      {/* Mobile View */}
+      <div className="md:hidden space-y-5 pb-10">
+         {bookings.map((booking) => (
+            <Card key={booking.id} className="border-none shadow-xl shadow-slate-200/50 rounded-[2rem] bg-white overflow-hidden">
+               <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                     <div className="space-y-1 max-w-[70%]">
+                        <h4 className="font-black text-sm text-slate-900 line-clamp-1">{booking.listing.title}</h4>
+                        <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
+                           <Calendar className="h-3.5 w-3.5 text-emerald-500" /> {format(new Date(booking.bookingDate), "PPP")}
                         </div>
                      </div>
-
-                     {renderActions(booking, true)}
-                  </CardContent>
-               </Card>
-            ))
-         )}
+                     {getStatusBadge(booking.status)}
+                  </div>
+                  <div className="flex justify-between items-center text-xs mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
+                     <div className="space-y-1">
+                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest block">{t.headers.user}</span>
+                        <span className="font-bold text-slate-700">{userRole === "GUIDE" ? booking.tourist.name : booking.guide.name}</span>
+                     </div>
+                     <div className="text-right space-y-1">
+                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest block">{t.headers.total}</span>
+                        <span className="font-black text-slate-900 text-lg">৳{booking.totalAmount}</span>
+                     </div>
+                  </div>
+                  {renderActions(booking, true)}
+               </CardContent>
+            </Card>
+         ))}
       </div>
+    </div>
+  );
+}
 
+// --- 🦴 Skeleton Loader Component ---
+function BookingsSkeleton() {
+  return (
+    <div className="p-10 space-y-10 animate-pulse bg-slate-50 min-h-screen">
+      <div className="flex justify-between items-end border-b border-slate-100 pb-8">
+        <div className="space-y-3"><div className="h-10 w-64 bg-slate-200 rounded-xl" /><div className="h-4 w-40 bg-slate-200 rounded-lg" /></div>
+        <div className="h-12 w-40 bg-white rounded-2xl shadow-sm" />
+      </div>
+      <Card className="border-none shadow-sm rounded-[2.5rem] overflow-hidden bg-white">
+        <div className="h-20 bg-slate-50" />
+        <div className="space-y-0">
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="flex items-center justify-between p-10 border-b border-slate-50">
+              <div className="h-4 w-48 bg-slate-100 rounded" />
+              <div className="flex gap-3"><div className="h-10 w-10 rounded-full bg-slate-100" /><div className="h-4 w-24 bg-slate-100 rounded" /></div>
+              <div className="h-4 w-24 bg-slate-100 rounded" />
+              <div className="h-6 w-24 bg-slate-100 rounded-full" />
+              <div className="h-10 w-32 bg-slate-900/5 rounded-xl" />
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
