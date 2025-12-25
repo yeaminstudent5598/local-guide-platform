@@ -7,6 +7,9 @@ import CTASection from "@/components/home/CTASection";
 import Testimonials from "@/components/home/Testimonials";
 import { ListingService } from "@/modules/listings/listing.service";
 import { ReviewService } from "@/modules/reviews/review.service";
+import Stats from "@/components/home/Stats";
+import FAQ from "@/components/home/FAQ";
+import Newsletter from "@/components/home/Newsletter";
 
 //ISR: Revalidate every 1 hour
 export const revalidate = 3600;
@@ -45,6 +48,8 @@ export default async function HomePage() {
       {/* 2. Featured Tours (Pass server data) */}
       <FeaturedTours tours={featuredTours} />
 
+      <Stats />
+
       {/* 3. How It Works */}
       <HowItWorks />
 
@@ -60,7 +65,11 @@ export default async function HomePage() {
       )}
 
       {/* 7. Call To Action */}
+
+      <FAQ />
+      <Newsletter />
       <CTASection />
+      
 
     </div>
   );
