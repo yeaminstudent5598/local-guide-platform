@@ -1,120 +1,141 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Quote, Star } from "lucide-react";
+import { Quote, Star, BadgeCheck, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
-import { useLanguage } from "@/components/providers/LanguageProvider"; // ✅ Language Hook
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function Testimonials({ reviews }: { reviews: any[] }) {
-  const { lang } = useLanguage(); // Use Hook
+  const { lang } = useLanguage();
 
-  // Translations
   const t = {
-    heading: lang === 'en' ? "What Travelers Say" : "ভ্রমণকারীদের মতামত",
-    subHeading: lang === 'en' ? "Real stories from real travelers." : "ভ্রমণকারীদের বাস্তব অভিজ্ঞতা।",
-    verified: lang === 'en' ? "Verified Traveler" : "ভেরিফাইড ট্রাভেলার",
+    label: lang === 'en' ? "VOICES OF EXPLORERS" : "ভ্রমণকারীদের কণ্ঠস্বর",
+    heading: lang === 'en' ? "Stories from the Heart of Bangladesh" : "বাংলাদেশের অভিজ্ঞতার গল্প",
+    subHeading: lang === 'en' ? "Authentic reviews from our global community of travelers." : "বিশ্বজুড়ে আমাদের ভ্রমণকারীদের বাস্তব অভিজ্ঞতা।",
+    verified: lang === 'en' ? "Verified Explorer" : "ভেরিফাইড এক্সপ্লোরার",
   };
 
-  // Fallback content if no reviews exist
-  const displayReviews = reviews.length > 0 ? reviews.slice(0, 3) : [
+  // Fallback realistic data with Emerald vibe
+  const displayReviews = reviews && reviews.length > 0 ? reviews.slice(0, 3) : [
     {
       id: "1",
-      comment: "This was the best experience of my life! The guide was so knowledgeable and friendly. Highly recommended!",
+      comment: "Exploring the tea gardens of Sylhet with Rajib was a spiritual experience. The depth of local history he shared was unparalleled.",
       rating: 5,
-      user: { name: "Sarah Jenkins", profileImage: "https://i.pravatar.cc/150?u=a042581f4e29026024d" }
+      user: { name: "Sarah J. Miller", profileImage: "https://i.pravatar.cc/150?u=sarah" }
     },
     {
       id: "2",
-      comment: "Vistara made my trip to Bangladesh unforgettable. The booking process was seamless and secure.",
+      comment: "Vistara isn't just a booking platform; it's a gateway to the soul of Bangladesh. Seamless booking and truly professional guides.",
       rating: 5,
-      user: { name: "Michael Chen", profileImage: "https://i.pravatar.cc/150?u=a042581f4e29026704d" }
+      user: { name: "Marcus Chen", profileImage: "https://i.pravatar.cc/150?u=marcus" }
     },
     {
       id: "3",
-      comment: "I loved the authentic local food tour. It felt like visiting a friend rather than a paid tour.",
-      rating: 4,
-      user: { name: "Ayesha Khan", profileImage: "https://i.pravatar.cc/150?u=a04258114e29026302d" }
+      comment: "I've traveled to 40 countries, and the photography tour in Old Dhaka arranged through Vistara was one of my top 5 moments ever.",
+      rating: 5,
+      user: { name: "Elena Rodriguez", profileImage: "https://i.pravatar.cc/150?u=elena" }
     }
   ];
 
   return (
-    <section className="py-24 px-4 bg-slate-50 relative overflow-hidden">
+    <section className="py-28 px-4 bg-[#FDFDFD] relative overflow-hidden">
       
-      {/* Background Decoration */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container relative z-10">
+      {/* --- Subtle Decorative Elements --- */}
+      <div className="absolute top-0 right-0 w-1/4 h-full bg-emerald-50/20 -skew-x-12 translate-x-20 pointer-events-none" />
+      
+      <div className="container mx-auto max-w-6xl relative z-10">
         
-        {/* Header */}
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-             {t.heading}
-           </h2>
-           <p className="text-lg text-slate-500">
-             {t.subHeading}
-           </p>
+        {/* --- Header Section --- */}
+        <div className="text-center mb-20 space-y-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-center gap-2 text-emerald-600 font-bold text-[10px] uppercase tracking-[0.4em]"
+          >
+             <div className="h-0.5 w-8 bg-emerald-600 rounded-full" />
+             {t.label}
+          </motion.div>
+          
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
+            {t.heading}
+          </h2>
+          <p className="text-slate-500 font-medium max-w-xl mx-auto italic">
+            {t.subHeading}
+          </p>
         </div>
 
-        {/* Testimonial Grid */}
+        {/* --- Testimonial Cards Grid --- */}
         <div className="grid md:grid-cols-3 gap-8">
           {displayReviews.map((review, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.2, duration: 0.5 }}
-              whileHover={{ y: -5 }}
+              transition={{ delay: i * 0.15, duration: 0.6 }}
+              whileHover={{ y: -8 }}
+              className="flex"
             >
-              <Card className="h-full border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden group">
-                <div className="h-2 w-full bg-gradient-to-r from-primary/40 to-primary/10"></div>
-                <CardContent className="p-8 flex flex-col h-full">
-                  
-                  {/* Quote Icon */}
-                  <div className="mb-6">
-                    <Quote className="h-10 w-10 text-primary/20 group-hover:text-primary/40 transition-colors" />
-                  </div>
+              <div className="relative bg-white border border-slate-100 rounded-[2.5rem] p-8 md:p-10 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-500 flex flex-col group">
+                
+                {/* Visual Accent */}
+                <div className="absolute top-8 right-10 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+                    <Quote className="h-20 w-20 text-emerald-900" />
+                </div>
 
-                  {/* Comment */}
-                  <p className="text-slate-600 italic mb-8 leading-relaxed text-lg flex-1">
-                    "{review.comment}"
-                  </p>
-                  
-                  {/* Footer Info */}
-                  <div className="flex items-center gap-4 pt-6 border-t border-slate-100">
-                     <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
-                        <AvatarImage src={review.user?.profileImage || `https://ui-avatars.com/api/?name=${review.user?.name}`} />
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold">{review.user?.name?.[0]}</AvatarFallback>
-                     </Avatar>
-                     <div>
-                        <div className="font-bold text-slate-900">{review.user?.name}</div>
-                        <div className="text-xs text-primary font-medium flex items-center gap-1">
-                          {t.verified}
-                          {/* Star Rating if available */}
-                          {review.rating && (
-                             <span className="text-slate-300 mx-1">•</span> 
-                          )}
-                          {review.rating && (
-                             <div className="flex">
-                               {[...Array(review.rating)].map((_, starI) => (
-                                  <Star key={starI} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                               ))}
-                             </div>
-                          )}
-                        </div>
-                     </div>
-                  </div>
+                {/* Star Rating */}
+                <div className="flex gap-1 mb-8">
+                  {[...Array(5)].map((_, starI) => (
+                    <Star 
+                      key={starI} 
+                      className={`h-3.5 w-3.5 ${starI < review.rating ? 'fill-emerald-500 text-emerald-500' : 'text-slate-100'}`} 
+                    />
+                  ))}
+                </div>
 
-                </CardContent>
-              </Card>
+                {/* Testimonial Text */}
+                <p className="text-slate-600 text-lg leading-relaxed font-medium mb-10 flex-1">
+                  "{review.comment}"
+                </p>
+                
+                {/* Author Info */}
+                <div className="flex items-center gap-4 pt-8 border-t border-slate-50">
+                  <div className="relative">
+                    <Avatar className="h-12 w-12 border-2 border-emerald-50 shadow-sm rounded-2xl overflow-hidden">
+                      <AvatarImage src={review.user?.profileImage} className="object-cover" />
+                      <AvatarFallback className="bg-emerald-50 text-emerald-700 font-bold">{review.user?.name?.[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-0.5 rounded-full border-2 border-white">
+                        <BadgeCheck className="h-3 w-3" />
+                    </div>
+                  </div>
+                  
+                  <div className="min-w-0">
+                    <h4 className="font-bold text-slate-900 text-sm truncate">{review.user?.name}</h4>
+                    <p className="text-[10px] text-emerald-600 font-black uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                      {t.verified}
+                    </p>
+                  </div>
+                </div>
+
+              </div>
             </motion.div>
           ))}
         </div>
+
+        {/* --- Bottom Trust Bar --- */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-20 flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-40 grayscale"
+        >
+           <div className="flex items-center gap-2 font-bold text-slate-400"><MessageSquare className="h-5 w-5" /> TRUSTPILOT</div>
+           <div className="flex items-center gap-2 font-bold text-slate-400"><Star className="h-5 w-5" /> GOOGLE REVIEWS</div>
+           <div className="flex items-center gap-2 font-bold text-slate-400"><BadgeCheck className="h-5 w-5" /> TRIPADVISOR</div>
+        </motion.div>
+
       </div>
     </section>
   );
