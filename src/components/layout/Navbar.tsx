@@ -31,6 +31,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   
   const { lang, setLang, t } = useLanguage(); 
+  // লোকাল ভেরিয়েবল হিসেবে t কে any কাস্ট করা হয়েছে যাতে টাইপ এরর না আসে
+  const trans: any = t;
 
   useEffect(() => {
     setMounted(true);
@@ -55,7 +57,8 @@ const Navbar = () => {
     localStorage.removeItem("accessToken");
     document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     setUser(null);
-    toast.success(t?.logoutSuccess || (lang === "bn" ? "লগআউট সফল হয়েছে" : "Logged out"));
+    // Fixed: Using the casted trans object
+    toast.success(trans?.logoutSuccess || (lang === "bn" ? "লগআউট সফল হয়েছে" : "Logged out"));
     router.push("/login");
   };
 
@@ -101,7 +104,7 @@ const Navbar = () => {
                   <NavigationMenuItem>
                     <Link href="/explore" legacyBehavior passHref>
                       <NavigationMenuLink className={linkStyles}>
-                        {t?.explore || (lang === "bn" ? "অন্বেষণ" : "Explore")}
+                        {trans?.explore || (lang === "bn" ? "অন্বেষণ" : "Explore")}
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
@@ -112,45 +115,45 @@ const Navbar = () => {
                       "text-sm font-bold bg-transparent transition-all",
                       scrolled ? "text-slate-700 hover:text-emerald-600" : "text-white hover:text-emerald-400 drop-shadow-md"
                     )}>
-                      {t?.destinations || (lang === "bn" ? "গন্তব্যসমূহ" : "Destinations")}
+                      {trans?.destinations || (lang === "bn" ? "গন্তব্যসমূহ" : "Destinations")}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="grid w-[600px] grid-cols-2 p-6 gap-4">
                         <div className="col-span-1 space-y-4">
                           <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
-                            {t?.popularSpots || (lang === "bn" ? "জনপ্রিয় স্থান" : "Popular Spots")}
+                            {trans?.popularSpots || (lang === "bn" ? "জনপ্রিয় স্থান" : "Popular Spots")}
                           </p>
                           <div className="grid gap-2">
                             <DestinationItem 
                               href="/explore?city=Sylhet" 
-                              title={t?.sylhet || (lang === "bn" ? "সিলেট" : "Sylhet")} 
+                              title={trans?.sylhet || (lang === "bn" ? "সিলেট" : "Sylhet")} 
                               icon={Mountain} 
-                              desc={t?.sylhetDesc || (lang === "bn" ? "চা বাগান ও জলপ্রপাত" : "Tea gardens & waterfalls")} 
+                              desc={trans?.sylhetDesc || (lang === "bn" ? "চা বাগান ও জলপ্রপাত" : "Tea gardens & waterfalls")} 
                             />
                             <DestinationItem 
                               href="/explore?city=CoxsBazar" 
-                              title={t?.coxsbazar || (lang === "bn" ? "কক্সবাজার" : "Cox's Bazar")} 
+                              title={trans?.coxsbazar || (lang === "bn" ? "কক্সবাজার" : "Cox's Bazar")} 
                               icon={Palmtree} 
-                              desc={t?.coxsbazarDesc || (lang === "bn" ? "বিশ্বের দীর্ঘতম সৈকত" : "World's longest beach")} 
+                              desc={trans?.coxsbazarDesc || (lang === "bn" ? "বিশ্বের দীর্ঘতম সৈকত" : "World's longest beach")} 
                             />
                             <DestinationItem 
                               href="/explore?city=Sajek" 
-                              title={t?.sajek || (lang === "bn" ? "সাজেক ভ্যালি" : "Sajek Valley")} 
+                              title={trans?.sajek || (lang === "bn" ? "সাজেক ভ্যালি" : "Sajek Valley")} 
                               icon={Globe} 
-                              desc={t?.sajekDesc || (lang === "bn" ? "মেঘের উপরে" : "Above the clouds")} 
+                              desc={trans?.sajekDesc || (lang === "bn" ? "মেঘের উপরে" : "Above the clouds")} 
                             />
                           </div>
                         </div>
                         <div className="col-span-1 bg-slate-50 rounded-2xl p-6 flex flex-col justify-center">
                             <h4 className="font-bold text-slate-900 mb-2">
-                              {t?.promoTitle || (lang === "bn" ? "গ্রীষ্ম ২০২৫" : "Summer 2025")}
+                              {trans?.promoTitle || (lang === "bn" ? "গ্রীষ্ম ২০২৫" : "Summer 2025")}
                             </h4>
                             <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-                              {t?.promoDesc || (lang === "bn" ? "বাংলাদেশের লুকানো সৌন্দর্য আবিষ্কার করুন।" : "Discover the hidden beauty of remote Bangladesh.")}
+                              {trans?.promoDesc || (lang === "bn" ? "বাংলাদেশের লুকানো সৌন্দর্য আবিষ্কার করুন।" : "Discover the hidden beauty of remote Bangladesh.")}
                             </p>
                             <Link href="/explore">
                               <Button size="sm" className="bg-emerald-600 rounded-lg">
-                                {t?.browseMap || (lang === "bn" ? "মানচিত্র ব্রাউজ করুন" : "Browse Map")}
+                                {trans?.browseMap || (lang === "bn" ? "মানচিত্র ব্রাউজ করুন" : "Browse Map")}
                               </Button>
                             </Link>
                         </div>
@@ -162,7 +165,7 @@ const Navbar = () => {
                   <NavigationMenuItem>
                     <Link href="/guides" legacyBehavior passHref>
                       <NavigationMenuLink className={linkStyles}>
-                        {t?.findTour || (lang === "bn" ? "গাইড খুঁজুন" : "Find Guides")}
+                        {trans?.findTour || (lang === "bn" ? "গাইড খুঁজুন" : "Find Guides")}
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
@@ -173,23 +176,23 @@ const Navbar = () => {
                       "text-sm font-bold bg-transparent transition-all",
                       scrolled ? "text-slate-700 hover:text-emerald-600" : "text-white hover:text-emerald-400 drop-shadow-md"
                     )}>
-                      {t?.resources || (lang === "bn" ? "তথ্য ভান্ডার" : "Resources")}
+                      {trans?.resources || (lang === "bn" ? "তথ্য ভান্ডার" : "Resources")}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <ul className="grid w-[400px] gap-3 p-4">
                         <ResourceItem 
                           href="/how-it-works" 
-                          title={t?.howItWorks || (lang === "bn" ? "কিভাবে কাজ করে" : "How it Works")} 
+                          title={trans?.howItWorks || (lang === "bn" ? "কিভাবে কাজ করে" : "How it Works")} 
                           icon={HelpCircle} 
                         />
                         <ResourceItem 
                           href="/about" 
-                          title={t?.aboutMission || (lang === "bn" ? "আমাদের লক্ষ্য" : "Our Mission")} 
+                          title={trans?.aboutMission || (lang === "bn" ? "আমাদের লক্ষ্য" : "Our Mission")} 
                           icon={ShieldCheck} 
                         />
                         <ResourceItem 
                           href="/contact" 
-                          title={t?.supportCenter || (lang === "bn" ? "সহায়তা কেন্দ্র" : "Support Center")} 
+                          title={trans?.supportCenter || (lang === "bn" ? "সহায়তা কেন্দ্র" : "Support Center")} 
                           icon={PhoneCall} 
                         />
                       </ul>
@@ -223,7 +226,7 @@ const Navbar = () => {
                   <Link href="/dashboard/listings/create" className="hidden xl:block">
                     <Button className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 px-6 shadow-lg shadow-emerald-100 border-none transition-all">
                       <Sparkles className="mr-2 h-4 w-4" /> 
-                      {t?.createTour || (lang === "bn" ? "ট্যুর তৈরি করুন" : "Create Tour")}
+                      {trans?.createTour || (lang === "bn" ? "ট্যুর তৈরি করুন" : "Create Tour")}
                     </Button>
                   </Link>
                 )}
@@ -260,7 +263,7 @@ const Navbar = () => {
                   <DropdownMenuContent className="w-56 mt-2 rounded-2xl shadow-2xl border-slate-100 p-2" align="end">
                     <DropdownMenuLabel className="px-3 py-2">
                         <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
-                          {t?.personalHub || (lang === "bn" ? "ব্যক্তিগত হাব" : "Personal Hub")}
+                          {trans?.personalHub || (lang === "bn" ? "ব্যক্তিগত হাব" : "Personal Hub")}
                         </p>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-slate-50" />
@@ -268,7 +271,7 @@ const Navbar = () => {
                       <Link href="/dashboard" className="flex items-center gap-3">
                         <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600"><LayoutDashboard className="h-4 w-4" /></div>
                         <span className="font-bold text-slate-700 text-sm">
-                          {t?.dashboard || (lang === "bn" ? "ড্যাশবোর্ড" : "Dashboard")}
+                          {trans?.dashboard || (lang === "bn" ? "ড্যাশবোর্ড" : "Dashboard")}
                         </span>
                       </Link>
                     </DropdownMenuItem>
@@ -276,7 +279,7 @@ const Navbar = () => {
                       <Link href="/dashboard/profile" className="flex items-center gap-3">
                         <div className="p-2 bg-slate-50 rounded-lg text-slate-600"><User className="h-4 w-4" /></div>
                         <span className="font-bold text-slate-700 text-sm">
-                          {t?.profile || (lang === "bn" ? "আমার প্রোফাইল" : "My Profile")}
+                          {trans?.profile || (lang === "bn" ? "আমার প্রোফাইল" : "My Profile")}
                         </span>
                       </Link>
                     </DropdownMenuItem>
@@ -284,7 +287,7 @@ const Navbar = () => {
                     <DropdownMenuItem onClick={handleLogout} className="rounded-xl py-2.5 cursor-pointer text-rose-600 focus:text-rose-700 focus:bg-rose-50">
                       <div className="flex items-center gap-3 w-full font-bold text-sm">
                         <div className="p-2 bg-rose-50 rounded-lg"><LogOut className="h-4 w-4" /></div>
-                        {t?.logout || (lang === "bn" ? "সাইন আউট" : "Sign Out")}
+                        {trans?.logout || (lang === "bn" ? "সাইন আউট" : "Sign Out")}
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -300,13 +303,13 @@ const Navbar = () => {
                       scrolled ? "text-slate-600 hover:bg-emerald-50" : "text-white hover:bg-white/10"
                     )}
                   >
-                    {t?.login || (lang === "bn" ? "লগইন" : "Login")}
+                    {trans?.login || (lang === "bn" ? "লগইন" : "Login")}
                   </Button>
                 </Link>
 
                 <Link href="/register">
                   <Button className="rounded-xl bg-slate-900 hover:bg-emerald-600 text-white font-bold h-11 px-8 shadow-xl shadow-slate-200 transition-all border-none">
-                    {t?.join || (lang === "bn" ? "Vistara এ যোগ দিন" : "Join Vistara")}
+                    {trans?.join || (lang === "bn" ? "Vistara এ যোগ দিন" : "Join Vistara")}
                   </Button>
                 </Link>
               </div>
