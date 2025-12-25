@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -12,8 +12,10 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { CalendarDays, MapPin, User } from "lucide-react";
+import { CalendarDays, MapPin, User, Search, Filter, Loader2, Sparkles, UserCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 
+// --- Interfaces ---
 interface Booking {
   id: string;
   bookingDate: string;
@@ -33,7 +35,6 @@ export default function AdminBookingsPage() {
     const fetchBookings = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        // Admin সব বুকিং পাবে (Backend এ লজিক করা আছে)
         const res = await fetch("/api/v1/bookings", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -55,102 +56,131 @@ export default function AdminBookingsPage() {
     fetchBookings();
   }, []);
 
-  // Helper function to colorize status badges
+  // --- 🎨 Premium Status Badges ---
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "CONFIRMED": return <Badge className="bg-green-500 hover:bg-green-600">Confirmed</Badge>;
-      case "PENDING": return <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>;
-      case "CANCELLED": return <Badge variant="destructive">Cancelled</Badge>;
-      case "REJECTED": return <Badge variant="destructive">Rejected</Badge>;
-      case "COMPLETED": return <Badge className="bg-blue-500 hover:bg-blue-600">Completed</Badge>;
-      default: return <Badge variant="outline">{status}</Badge>;
-    }
+    const styles: Record<string, string> = {
+      CONFIRMED: "bg-emerald-100 text-emerald-700 border-emerald-200",
+      PENDING: "bg-amber-100 text-amber-700 border-amber-200",
+      CANCELLED: "bg-rose-100 text-rose-700 border-rose-200",
+      REJECTED: "bg-slate-100 text-slate-700 border-slate-200",
+      COMPLETED: "bg-blue-100 text-blue-700 border-blue-200",
+    };
+
+    return (
+      <Badge variant="outline" className={cn("px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-tighter", styles[status] || "bg-slate-50")}>
+        {status}
+      </Badge>
+    );
   };
 
-  if (loading) {
-    return <div className="p-10 text-center text-muted-foreground">Loading all bookings...</div>;
-  }
+  // --- 🦴 Requirement 10: Skeleton Table Loader ---
+  if (loading) return <BookingsTableSkeleton />;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">All Bookings</h2>
-          <p className="text-muted-foreground">Monitor all transactions and booking statuses.</p>
+    <div className="flex-1 space-y-8 p-6 md:p-10 pt-6 max-w-7xl mx-auto bg-[#F8FAFB] min-h-screen">
+      
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-emerald-600 font-bold text-[10px] uppercase tracking-[0.3em] mb-1">
+             <Sparkles className="h-3 w-3" /> Transaction Logs
+          </div>
+          <h2 className="text-4xl font-black tracking-tight text-slate-900">Manage <span className="text-emerald-600 italic font-serif">Bookings</span></h2>
+          <p className="text-slate-500 text-sm font-medium italic">Monitor global activities and tour statuses.</p>
         </div>
-        <Badge variant="secondary" className="text-lg px-4 py-1">
-          Total: {bookings.length}
-        </Badge>
+        <div className="flex items-center gap-3">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
+                <div className="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                    <CalendarDays className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div>
+                    <p className="text-[10px] font-black uppercase text-slate-400">Total Entries</p>
+                    <p className="text-xl font-black text-slate-900 leading-none">{bookings.length}</p>
+                </div>
+            </div>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Booking Management</CardTitle>
+      <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[2.5rem] overflow-hidden bg-white">
+        <CardHeader className="border-b border-slate-50 p-8 bg-white">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl font-bold text-slate-900">Live Booking Register</CardTitle>
+            <div className="flex gap-2">
+                <Badge variant="secondary" className="bg-slate-50 text-slate-500 hover:bg-slate-100 border-none px-3 py-1 font-bold">
+                    System Verified
+                </Badge>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tour Details</TableHead>
-                <TableHead>Tourist Info</TableHead>
-                <TableHead>Guide Info</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
+            <TableHeader className="bg-slate-50/50">
+              <TableRow className="hover:bg-transparent border-slate-50">
+                <TableHead className="py-5 pl-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Tour Details</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tourist Info</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Guide Info</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Date & Amount</TableHead>
+                <TableHead className="pr-8 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {bookings.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
-                    No bookings found in the system.
+                  <TableCell colSpan={6} className="text-center py-24">
+                    <div className="flex flex-col items-center gap-3 text-slate-300">
+                        <Search className="h-12 w-12 opacity-20" />
+                        <p className="font-bold text-sm">No bookings found in the registry.</p>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 bookings.map((booking) => (
-                  <TableRow key={booking.id}>
+                  <TableRow key={booking.id} className="group hover:bg-slate-50/50 transition-colors border-slate-50">
                     {/* Tour Info */}
-                    <TableCell>
-                      <div className="font-medium">{booking.listing.title}</div>
-                      <div className="flex items-center text-xs text-muted-foreground mt-1">
-                        <MapPin className="h-3 w-3 mr-1" />
+                    <TableCell className="py-6 pl-8">
+                      <div className="font-bold text-slate-900 leading-tight group-hover:text-emerald-600 transition-colors">{booking.listing.title}</div>
+                      <div className="flex items-center text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">
+                        <MapPin className="h-3 w-3 mr-1 text-emerald-500" />
                         {booking.listing.city}
                       </div>
                     </TableCell>
 
                     {/* Tourist Info */}
                     <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-sm flex items-center gap-1">
-                          <User className="h-3 w-3" /> {booking.tourist.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">{booking.tourist.email}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600">
+                            {booking.tourist.name[0]}
+                        </div>
+                        <div className="flex flex-col">
+                           <span className="font-bold text-slate-900 text-xs">{booking.tourist.name}</span>
+                           <span className="text-[10px] font-medium text-slate-400">{booking.tourist.email}</span>
+                        </div>
                       </div>
                     </TableCell>
 
                     {/* Guide Info */}
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium text-sm">{booking.guide?.name}</span>
-                        <span className="text-xs text-muted-foreground">{booking.guide?.email}</span>
+                        <span className="font-bold text-slate-900 text-xs flex items-center gap-1">
+                            <UserCheck className="h-3 w-3 text-blue-500" /> {booking.guide?.name}
+                        </span>
+                        <span className="text-[10px] font-medium text-slate-400">{booking.guide?.email}</span>
                       </div>
                     </TableCell>
 
-                    {/* Booking Date */}
+                    {/* Booking Date & Amount */}
                     <TableCell>
-                      <div className="flex items-center gap-1">
-                        <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                        {new Date(booking.bookingDate).toLocaleDateString()}
+                      <div className="flex flex-col">
+                        <div className="font-black text-slate-900 text-sm">৳{booking.totalAmount}</div>
+                        <div className="text-[10px] font-bold text-slate-400 flex items-center gap-1 mt-0.5">
+                            <CalendarDays className="h-3 w-3" />
+                            {new Date(booking.bookingDate).toLocaleDateString()}
+                        </div>
                       </div>
-                    </TableCell>
-
-                    {/* Amount */}
-                    <TableCell className="font-bold text-slate-700">
-                      ৳ {booking.totalAmount}
                     </TableCell>
 
                     {/* Status Badge */}
-                    <TableCell>
+                    <TableCell className="pr-8 text-right">
                       {getStatusBadge(booking.status)}
                     </TableCell>
                   </TableRow>
@@ -160,7 +190,35 @@ export default function AdminBookingsPage() {
           </Table>
         </CardContent>
       </Card>
-      
+    </div>
+  );
+}
+
+// --- 🦴 Requirement 10: Skeleton Component ---
+function BookingsTableSkeleton() {
+  return (
+    <div className="p-10 space-y-10 animate-pulse bg-slate-50 min-h-screen max-w-7xl mx-auto">
+      <div className="flex justify-between items-center">
+        <div className="space-y-3">
+            <div className="h-4 w-32 bg-slate-200 rounded-lg" />
+            <div className="h-10 w-64 bg-slate-200 rounded-xl" />
+        </div>
+        <div className="h-20 w-40 bg-white rounded-2xl shadow-sm" />
+      </div>
+      <Card className="border-none shadow-sm rounded-[2.5rem] overflow-hidden">
+        <div className="h-20 bg-white border-b border-slate-50" />
+        <div className="p-0">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="flex items-center justify-between p-8 border-b border-slate-50 bg-white">
+              <div className="space-y-2"><div className="h-4 w-40 bg-slate-100 rounded" /><div className="h-3 w-20 bg-slate-50 rounded" /></div>
+              <div className="h-8 w-32 bg-slate-50 rounded-lg" />
+              <div className="h-8 w-32 bg-slate-50 rounded-lg" />
+              <div className="h-4 w-20 bg-slate-100 rounded" />
+              <div className="h-8 w-24 bg-slate-100 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
