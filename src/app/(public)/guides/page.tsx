@@ -1,70 +1,50 @@
 import { UserService } from "@/modules/users/user.service";
-import GuideCard from "@/components/guides/GuideCard";
-import { UserPlus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
+import GuideCard from "./components/GuideCard";
 
-// এটি একটি Server Component যা সরাসরি ডাটাবেজ থেকে ডাটা নিয়ে আসবে
 export default async function GuidesPage() {
-  // ডাটাবেজ থেকে শুধু গাইডদের ডাটা নিয়ে আসা হচ্ছে
-  // আপনার UserService.getAllUsers() মেথডটি এখানে ব্যবহার করা হচ্ছে
   const allUsers = await UserService.getAllUsers();
   const guides = allUsers?.filter((user: any) => user.role === "GUIDE") || [];
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-16">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-              Meet Our <span className="text-primary">Expert Guides</span>
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Discover Bangladesh through the eyes of local experts. Professional, 
-              verified, and passionate storytellers ready to make your journey unforgettable.
-            </p>
-          </div>
-
-          {/* Search/Filter Bar (Update-02 Requirement) */}
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search guides by name or expertise..." 
-              className="pl-10 rounded-full bg-muted/50 border-none focus-visible:ring-primary"
-            />
-          </div>
+    <div className="min-h-screen bg-[#F8FAFC]">
+      {/* 🏔️ Premium Cinematic Header */}
+      <div className="relative overflow-hidden bg-slate-950 pt-36 pb-12">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80" 
+            alt="bg" fill className="object-cover opacity-30 grayscale" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
         </div>
 
-        {/* Guides Grid Layout (Update-02: 4 cards per row for desktop preferred) */}
-        {guides.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-            {guides.map((guide: any) => (
-              <GuideCard 
-                key={guide.id} 
-                guide={{
-                  id: guide.id,
-                  name: guide.name,
-                  profileImage: guide.profileImage,
-                  expertise: guide.expertise || ["Local Expert"],
-                  languages: guide.languages || ["Bengali", "English"],
-                  rating: 5.0, // আপাতত স্ট্যাটিক, পরে ডাইনামিক করতে পারেন
-                  totalReviews: guide._count?.listings || 0,
-                  location: "Bangladesh",
-                  isVerified: guide.isVerified
-                }} 
-              />
-            ))}
+        <div className="container relative z-10 mx-auto px-6 max-w-7xl flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-1">
+            <p className="text-emerald-400 font-bold text-[9px] uppercase tracking-[0.4em]">Verified Experts</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Our Local <span className="text-emerald-500 italic font-serif">Guides</span></h1>
           </div>
-        ) : (
-          /* Empty State */
-          <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed border-muted">
-            <UserPlus className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold">No Guides Found</h3>
-            <p className="text-muted-foreground mt-2">Check back later or try a different search.</p>
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-emerald-500" />
+            <Input placeholder="Find an expert..." className="h-11 pl-11 rounded-xl bg-white/10 border-white/10 text-white text-xs focus-visible:ring-emerald-500" />
           </div>
-        )}
+        </div>
+      </div>
 
+      {/* 📦 Compact Grid (4 per row) */}
+      <div className="container mx-auto px-6 py-12 max-w-7xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {guides.map((guide: any) => (
+            <GuideCard 
+              key={guide.id} 
+              guide={{
+                ...guide,
+                profileImage: guide.profileImage || "https://i.ibb.co/5GzXkwq/user-placeholder.png"
+              }} 
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
